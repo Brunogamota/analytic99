@@ -56,6 +56,9 @@ export interface Snapshot {
   pedidosWeekend: Map<string, number>
   horasWeekend: Map<string, number>
   pedidosAlmoco: Map<string, number>
+  receitaTotal: number
+  reclamacoes: Map<string, number>
+  reclamacoesGraves: Map<string, number>
   totalPedidos: number
   totalHoras: number
 }
@@ -104,12 +107,22 @@ export function snapshot(parceiros: DimParceiro[], periodo: Periodo): Snapshot {
     }
   }
 
+  const reclamacoes = new Map<string, number>()
+  const reclamacoesGraves = new Map<string, number>()
+  for (const r of dataset.reclamacoes) {
+    if (!ids.has(r.id_parceiro) || !noPeriodo(r.data)) continue
+    soma(reclamacoes, r.id_parceiro, 1)
+    if (r.gravidade === 'alta') soma(reclamacoesGraves, r.id_parceiro, 1)
+  }
+
   const promos = dataset.promos.filter(
     (p) => ids.has(p.id_parceiro) && meses.includes(p.data.slice(0, 7)),
   )
 
   let totalHoras = 0
   for (const v of horasPorParceiro.values()) totalHoras += v
+  let receitaTotal = 0
+  for (const v of receitaPorParceiro.values()) receitaTotal += v
 
   return {
     periodo,
@@ -126,6 +139,9 @@ export function snapshot(parceiros: DimParceiro[], periodo: Periodo): Snapshot {
     pedidosWeekend,
     horasWeekend,
     pedidosAlmoco,
+    receitaTotal,
+    reclamacoes,
+    reclamacoesGraves,
     totalPedidos,
     totalHoras,
   }

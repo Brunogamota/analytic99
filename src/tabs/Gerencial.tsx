@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { AlertBanner } from '@/components/AlertBanner'
+import { ListaAlertas } from '@/components/AlertBanner'
 import { Coluna, DataTable } from '@/components/DataTable'
 import { Heatmap } from '@/components/Heatmap'
 import { KpiCard } from '@/components/KpiCard'
-import { Badge, SecaoTitulo, Vazio } from '@/components/ui'
+import { Badge, SecaoTitulo } from '@/components/ui'
 import { cn, fmtDec, fmtInt, fmtPct } from '@/lib/format'
 import {
   alertas as calcularAlertas,
@@ -21,8 +21,8 @@ import {
 
 function badgeAderencia(v: number) {
   if (v >= 0.8) return <Badge tom="verde">{fmtPct(v)}</Badge>
-  if (v >= 0.7) return <Badge tom="ambar">{fmtPct(v)}</Badge>
-  return <Badge tom="vermelho">{fmtPct(v)}</Badge>
+  if (v >= 0.7) return <Badge tom="amarelo">{fmtPct(v)}</Badge>
+  return <Badge tom="laranja">{fmtPct(v)}</Badge>
 }
 
 function DrillDownExecutivo({
@@ -75,7 +75,7 @@ function DrillDownExecutivo({
                 aderência {fmtPct(linha.pct_aderencia)}
               </Dialog.Description>
             </div>
-            <Dialog.Close className="rounded p-1 text-muted outline-none hover:bg-hairline focus-visible:ring-2 focus-visible:ring-accent/30">
+            <Dialog.Close className="rounded p-1 text-muted outline-none hover:bg-hairline focus-visible:ring-2 focus-visible:ring-rosa/30">
               <X className="h-4 w-4" />
             </Dialog.Close>
           </div>
@@ -103,7 +103,7 @@ function DrillDownExecutivo({
                     <td
                       className={cn(
                         'num px-5 py-2.5 text-[13px]',
-                        c.horas === 0 && 'font-semibold text-[#B91C1C]',
+                        c.horas === 0 && 'font-semibold text-[#C23A02]',
                       )}
                     >
                       {fmtDec(c.horas, 1)}
@@ -113,11 +113,11 @@ function DrillDownExecutivo({
                       <Badge
                         tom={
                           c.banner === 'Perdeu'
-                            ? 'vermelho'
+                            ? 'laranja'
                             : c.banner === 'Manteve'
                               ? 'verde'
                               : c.banner === 'Ganhou'
-                                ? 'azul'
+                                ? 'amarelo'
                                 : 'cinza'
                         }
                       >
@@ -163,7 +163,7 @@ export function Gerencial({
       numerica: true,
       valor: (l) => l.ativos,
       render: (l) => (
-        <span className={cn(l.ativos < l.parceiros && 'font-medium text-[#B91C1C]')}>
+        <span className={cn(l.ativos < l.parceiros && 'font-medium text-[#C23A02]')}>
           {l.ativos}
         </span>
       ),
@@ -182,7 +182,7 @@ export function Gerencial({
       numerica: true,
       valor: (l) => l.razao_budget,
       render: (l) => (
-        <span className={cn(l.razao_budget > 1.1 && 'font-medium text-[#B91C1C]')}>
+        <span className={cn(l.razao_budget > 1.1 && 'font-medium text-[#C23A02]')}>
           {fmtPct(l.razao_budget)}
         </span>
       ),
@@ -196,7 +196,7 @@ export function Gerencial({
         l.alertas === 0 ? (
           <span className="text-muted">—</span>
         ) : (
-          <Badge tom="vermelho">{l.alertas}</Badge>
+          <Badge tom="laranja">{l.alertas}</Badge>
         ),
     },
   ]
@@ -213,24 +213,7 @@ export function Gerencial({
       </section>
 
       <section>
-        <SecaoTitulo
-          titulo="Alertas críticos"
-          descricao="Cada linha vem de um cruzamento sobre os dados do período — nada é fixo."
-        />
-        {alertas.length === 0 ? (
-          <div className="card">
-            <Vazio
-              titulo="Nenhum alerta neste recorte"
-              dica="Amplie o período ou remova filtros de gerente e praça para inspecionar mais carteiras."
-            />
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {alertas.map((a) => (
-              <AlertBanner key={a.chave} alerta={a} />
-            ))}
-          </div>
-        )}
+        <ListaAlertas alertas={alertas} />
       </section>
 
       <section>

@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/format'
 
+/** Tons na paleta 99: laranja carrega urgência, amarelo carrega destaque. */
 const TONS = {
   verde: 'bg-[#ECFDF5] text-[#047857]',
-  vermelho: 'bg-[#FEF2F2] text-[#B91C1C]',
+  laranja: 'bg-laranja-fundo text-laranja-escuro',
+  amarelo: 'bg-amarelo-fundo text-[#8A6D00]',
+  rosa: 'bg-rosa-fundo text-rosa-escuro',
   cinza: 'bg-hairline text-muted',
-  ambar: 'bg-[#FFFBEB] text-[#B45309]',
-  azul: 'bg-[#EFF6FF] text-[#1D4ED8]',
-  roxo: 'bg-[#F5F3FF] text-accent',
 } as const
 
 export type Tom = keyof typeof TONS
@@ -49,11 +49,49 @@ export function SecaoTitulo({
  * Estado vazio: o layout não colapsa quando o filtro não devolve nada — a
  * moldura continua e só o miolo explica o que fazer.
  */
-export function Vazio({ titulo, dica }: { titulo: string; dica?: string }) {
+export function Vazio({ titulo, dica, acao }: { titulo: string; dica?: string; acao?: ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
       <p className="text-[14px] font-medium text-ink">{titulo}</p>
       {dica && <p className="mt-1 max-w-[380px] text-[13px] text-muted">{dica}</p>}
+      {acao && <div className="mt-3">{acao}</div>}
     </div>
+  )
+}
+
+export function BotaoPrimario({
+  children,
+  onClick,
+  disabled,
+  type = 'button',
+}: {
+  children: ReactNode
+  onClick?: () => void
+  disabled?: boolean
+  type?: 'button' | 'submit'
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex h-8 items-center gap-1.5 rounded-md bg-ink px-3 text-[13px] font-medium text-white outline-none transition-colors hover:bg-noite-claro disabled:opacity-40"
+    >
+      {children}
+    </button>
+  )
+}
+
+export function BotaoSecundario({
+  children,
+  onClick,
+}: {
+  children: ReactNode
+  onClick?: () => void
+}) {
+  return (
+    <button type="button" onClick={onClick} className="chip">
+      {children}
+    </button>
   )
 }

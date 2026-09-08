@@ -15,7 +15,7 @@ export function PromoSpecial({ atual }: { atual: Snapshot }) {
       chave: 'categoria',
       label: 'Categoria',
       valor: (l) => l.categoria,
-      render: (l) => <Badge tom="roxo">{CATEGORIA_LABEL[l.categoria]}</Badge>,
+      render: (l) => <Badge tom="rosa">{CATEGORIA_LABEL[l.categoria]}</Badge>,
     },
     { chave: 'executivo', label: 'Executivo', valor: (l) => l.executivo, larguraMin: '160px' },
     {
@@ -35,7 +35,7 @@ export function PromoSpecial({ atual }: { atual: Snapshot }) {
         ) : l.aderente ? (
           <Badge tom="verde">Aderente</Badge>
         ) : (
-          <Badge tom="vermelho">Não aderente</Badge>
+          <Badge tom="laranja">Não aderente</Badge>
         ),
     },
   ]

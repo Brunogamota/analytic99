@@ -70,7 +70,7 @@ export function PageHeader({
             if (!o) setNome('')
           }}
         >
-          <Popover.Trigger className="flex items-center gap-1 pb-2 text-[13px] text-accent hover:underline">
+          <Popover.Trigger className="flex items-center gap-1 pb-2 text-[13px] text-rosa hover:underline">
             <Plus className="h-3.5 w-3.5" strokeWidth={2} />
             Adicionar visão
           </Popover.Trigger>
@@ -89,7 +89,7 @@ export function PageHeader({
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex.: Nordeste sem banner"
-                className="mt-2.5 h-8 w-full rounded-md border border-control px-2 text-[13px] text-ink outline-none focus:border-accent"
+                className="mt-2.5 h-8 w-full rounded-md border border-control px-2 text-[13px] text-ink outline-none focus:border-rosa"
               />
               <button
                 type="button"
@@ -99,7 +99,7 @@ export function PageHeader({
                   setAberto(false)
                   setNome('')
                 }}
-                className="mt-2 h-8 w-full rounded-md bg-accent text-[13px] font-medium text-white disabled:opacity-40"
+                className="mt-2 h-8 w-full rounded-md bg-rosa text-[13px] font-medium text-white disabled:opacity-40"
               >
                 Salvar visão
               </button>

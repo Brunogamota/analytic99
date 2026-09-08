@@ -8,8 +8,10 @@ import type {
   FatoHoras,
   FatoPedido,
   FatoPromo,
+  FatoReclamacao,
   HistBanner,
   TipoPromo,
+  TipoReclamacao,
 } from './types'
 
 export const HOJE = '2026-09-08'
@@ -31,6 +33,7 @@ export const CASOS: {
   aderenciaTravada: string[]
   executivoPerfeito: string
   perdeuBanner: string[]
+  qualidadeCaindo: string[]
 } = {
   zeroHoras: ['P07', 'P23', 'P41'],
   pizzaAlmoco: ['P13', 'P34'],
@@ -39,6 +42,7 @@ export const CASOS: {
   aderenciaTravada: ['P16', 'P31'],
   executivoPerfeito: 'E04',
   perdeuBanner: ['P03', 'P11', 'P22', 'P37'],
+  qualidadeCaindo: ['P09', 'P26', 'P48'],
 }
 
 const GERENTES: DimGerente[] = [
@@ -206,13 +210,17 @@ function build(): Dataset {
     const conversaoBase =
       p.categoria === 'pizza' ? rng.float(1.1, 2.2) : p.categoria === 'burger' ? rng.float(1.3, 2.6) : rng.float(0.9, 1.8)
     const ticket = p.categoria === 'pizza' ? 78 : p.categoria === 'burger' ? 54 : 46
+    // Nem todo parceiro rende igual no fim de semana nem no almoço: sem essa
+    // variação por parceiro, "abaixo da média" não existiria em lugar nenhum.
+    const fatorWeekend = rng.bool(0.3) ? rng.float(0.55, 0.85) : rng.float(1.05, 1.5)
+    const fatorAlmoco = rng.bool(0.35) ? rng.float(0.15, 0.5) : rng.float(0.85, 1.25)
 
     for (const dia of dias) {
       const dow = diaSemana(dia)
       const fds = dow === 0 || dow === 6
       const h = horasPorChave.get(`${p.id_parceiro}|${dia}`) ?? 0
 
-      let qtd = Math.round(h * conversaoBase * (fds ? rng.float(1.05, 1.5) : rng.float(0.85, 1.1)))
+      let qtd = Math.round(h * conversaoBase * (fds ? fatorWeekend : rng.float(0.85, 1.1)))
 
       // Pedidos registrados sem hora online — padrão de fraude.
       if (CASOS.pedidoSemHora.includes(p.id_parceiro) && dia.startsWith(MES_ATUAL)) {
@@ -222,7 +230,11 @@ function build(): Dataset {
 
       const almoco = p.abre_almoco || CASOS.pizzaAlmoco.includes(p.id_parceiro)
       const curva: [number, number][] = [
-        ...(almoco ? Object.entries(CURVA_ALMOCO).map(([k, v]) => [Number(k), v] as [number, number]) : []),
+        ...(almoco
+          ? Object.entries(CURVA_ALMOCO).map(
+              ([k, v]) => [Number(k), v * fatorAlmoco] as [number, number],
+            )
+          : []),
         ...Object.entries(CURVA_JANTAR).map(([k, v]) => [Number(k), v] as [number, number]),
       ]
       const somaPesos = curva.reduce((s, [, w]) => s + w, 0)
@@ -300,6 +312,33 @@ function build(): Dataset {
     }
   }
 
+  // ---- fato_reclamacoes ----------------------------------------------------
+  const reclamacoes: FatoReclamacao[] = []
+  const tiposReclamacao: TipoReclamacao[] = ['atraso', 'pedido_errado', 'qualidade', 'cancelamento']
+  let seqReclamacao = 0
+  for (const p of parceiros) {
+    // Taxa por 100 pedidos: a maioria opera bem, alguns degradam no mês atual.
+    const taxaBase = rng.float(0.8, 3.2)
+    for (const dia of dias) {
+      const pedidosDoDia = Math.round((horasPorChave.get(`${p.id_parceiro}|${dia}`) ?? 0) * 1.6)
+      const degradado =
+        CASOS.qualidadeCaindo.includes(p.id_parceiro) && dia.startsWith(MES_ATUAL) ? 4.5 : 1
+      const esperado = (pedidosDoDia * taxaBase * degradado) / 100
+      let n = Math.floor(esperado)
+      if (rng.next() < esperado - n) n++
+      for (let k = 0; k < n; k++) {
+        seqReclamacao++
+        reclamacoes.push({
+          id_reclamacao: `R${String(seqReclamacao).padStart(6, '0')}`,
+          id_parceiro: p.id_parceiro,
+          data: dia,
+          tipo: rng.pick(tiposReclamacao),
+          gravidade: rng.bool(0.18) ? 'alta' : rng.bool(0.45) ? 'media' : 'baixa',
+        })
+      }
+    }
+  }
+
   // Sanidade: todo parceiro plantado precisa existir.
   for (const id of [
     ...CASOS.zeroHoras,
@@ -320,6 +359,7 @@ function build(): Dataset {
     pedidos,
     horas,
     banners,
+    reclamacoes,
     meses: MESES,
     hoje: HOJE,
   }

@@ -59,6 +59,17 @@ export interface HistBanner {
   tem_banner: boolean
 }
 
+export type TipoReclamacao = 'atraso' | 'pedido_errado' | 'qualidade' | 'cancelamento'
+export type Gravidade = 'baixa' | 'media' | 'alta'
+
+export interface FatoReclamacao {
+  id_reclamacao: string
+  id_parceiro: string
+  data: string
+  tipo: TipoReclamacao
+  gravidade: Gravidade
+}
+
 export interface Dataset {
   gerentes: DimGerente[]
   executivos: DimExecutivo[]
@@ -67,6 +78,7 @@ export interface Dataset {
   pedidos: FatoPedido[]
   horas: FatoHoras[]
   banners: HistBanner[]
+  reclamacoes: FatoReclamacao[]
   meses: string[]
   hoje: string
 }

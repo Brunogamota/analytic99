@@ -25,7 +25,7 @@ export function PromoSmart({ atual }: { atual: Snapshot }) {
       render: (l) => {
         const razao = l.budget_needed === 0 ? 0 : l.budget_real / l.budget_needed
         return (
-          <span className={razao > 1.5 ? 'font-medium text-[#B91C1C]' : undefined}>
+          <span className={razao > 1.5 ? 'font-medium text-[#C23A02]' : undefined}>
             {fmtMoeda(l.budget_real)}
           </span>
         )
@@ -36,7 +36,7 @@ export function PromoSmart({ atual }: { atual: Snapshot }) {
       label: 'Aderente?',
       valor: (l) => l.aderente,
       render: (l) =>
-        l.aderente ? <Badge tom="verde">Aderente</Badge> : <Badge tom="vermelho">Não aderente</Badge>,
+        l.aderente ? <Badge tom="verde">Aderente</Badge> : <Badge tom="laranja">Não aderente</Badge>,
     },
     {
       chave: 'dias',

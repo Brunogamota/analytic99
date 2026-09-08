@@ -28,13 +28,18 @@ const METRICAS: { id: MetricaHeatmap; label: string; ajuda: string }[] = [
   },
 ]
 
-/** Branco → #1D4ED8, linear: zero fica branco e a leitura acompanha o valor. */
+/**
+ * Branco → amarelo 99 → laranja 99. Dois estágios porque o amarelo puro é
+ * claro demais para marcar o topo da escala sozinho.
+ */
 function corDaCelula(intensidade: number): string {
   const t = Math.max(0, Math.min(1, intensidade))
-  const r = Math.round(255 + (29 - 255) * t)
-  const g = Math.round(255 + (78 - 255) * t)
-  const b = Math.round(255 + (216 - 255) * t)
-  return `rgb(${r}, ${g}, ${b})`
+  const [de, para, k] =
+    t <= 0.5
+      ? ([[255, 255, 255], [255, 221, 0], t / 0.5] as const)
+      : ([[255, 221, 0], [252, 76, 2], (t - 0.5) / 0.5] as const)
+  const canal = (i: number) => Math.round(de[i] + (para[i] - de[i]) * k)
+  return `rgb(${canal(0)}, ${canal(1)}, ${canal(2)})`
 }
 
 function formatar(v: number, metrica: MetricaHeatmap): string {
@@ -91,7 +96,7 @@ export function Heatmap({
             <span className="text-[11px] text-muted">0</span>
             <div
               className="h-2 w-24 rounded-sm"
-              style={{ background: 'linear-gradient(to right, #FFFFFF, #1D4ED8)' }}
+              style={{ background: 'linear-gradient(to right, #FFFFFF, #FFDD00, #FC4C02)' }}
             />
             <span className="text-[11px] text-muted">{formatar(max, metrica)}</span>
           </div>
@@ -147,7 +152,7 @@ export function Heatmap({
                       style={{ backgroundColor: corDaCelula(intensidade) }}
                       className={cn(
                         'flex h-7 items-center justify-center rounded-[3px] text-[11px] font-medium tabular-nums',
-                        intensidade > 0.55 ? 'text-white' : 'text-ink',
+                        intensidade > 0.82 ? 'text-white' : 'text-ink',
                         v === 0 && 'border border-hairline',
                       )}
                     >

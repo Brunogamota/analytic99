@@ -5,8 +5,8 @@ import { statusBanner, type LinhaBanner, type Snapshot, type StatusBanner as Sta
 
 const TOM: Record<Status, Tom> = {
   Manteve: 'verde',
-  Perdeu: 'vermelho',
-  Ganhou: 'azul',
+  Perdeu: 'laranja',
+  Ganhou: 'amarelo',
   'Nunca teve': 'cinza',
 }
 

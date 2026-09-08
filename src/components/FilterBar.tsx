@@ -44,7 +44,7 @@ function Chip({
     <>
       <Icone className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} />
       <span className="text-muted">{label}</span>
-      <span className={cn('font-medium', ativo ? 'text-accent' : 'text-ink')}>{valor}</span>
+      <span className={cn('font-medium', ativo ? 'text-rosa' : 'text-ink')}>{valor}</span>
       <ChevronDown className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} />
     </>
   )
@@ -106,7 +106,7 @@ function PeriodoFiltro({
                 className={cn(itemClasses, 'w-full hover:bg-hairline')}
               >
                 {label}
-                {periodo.tipo === tipo && <Check className="h-3.5 w-3.5 text-accent" />}
+                {periodo.tipo === tipo && <Check className="h-3.5 w-3.5 text-rosa" />}
               </button>
             ))}
 
@@ -118,7 +118,7 @@ function PeriodoFiltro({
                   value={inicio}
                   max={fim}
                   onChange={(e) => setInicio(e.target.value)}
-                  className="h-8 w-full rounded-md border border-control px-2 text-[12px] text-ink outline-none focus:border-accent"
+                  className="h-8 w-full rounded-md border border-control px-2 text-[12px] text-ink outline-none focus:border-rosa"
                 />
                 <span className="text-muted">→</span>
                 <input
@@ -127,7 +127,7 @@ function PeriodoFiltro({
                   min={inicio}
                   max={dataset.hoje}
                   onChange={(e) => setFim(e.target.value)}
-                  className="h-8 w-full rounded-md border border-control px-2 text-[12px] text-ink outline-none focus:border-accent"
+                  className="h-8 w-full rounded-md border border-control px-2 text-[12px] text-ink outline-none focus:border-rosa"
                 />
               </div>
               <button
@@ -137,7 +137,7 @@ function PeriodoFiltro({
                   onChange({ tipo: 'custom', inicio, fim })
                   setAberto(false)
                 }}
-                className="mt-2 h-8 w-full rounded-md bg-accent text-[13px] font-medium text-white disabled:opacity-40"
+                className="mt-2 h-8 w-full rounded-md bg-rosa text-[13px] font-medium text-white disabled:opacity-40"
               >
                 Aplicar
               </button>
@@ -205,7 +205,7 @@ function MultiSelect({
                 {o.nota && <span className="text-[11px] text-muted">{o.nota}</span>}
               </span>
               <DropdownMenu.ItemIndicator>
-                <Check className="h-3.5 w-3.5 text-accent" strokeWidth={2.5} />
+                <Check className="h-3.5 w-3.5 text-rosa" strokeWidth={2.5} />
               </DropdownMenu.ItemIndicator>
             </DropdownMenu.CheckboxItem>
           ))}
@@ -289,7 +289,7 @@ export function FilterBar({
               onSelect={() => onChange({ ...filtros, praca: null })}
             >
               Todas
-              {filtros.praca === null && <Check className="h-3.5 w-3.5 text-accent" />}
+              {filtros.praca === null && <Check className="h-3.5 w-3.5 text-rosa" />}
             </DropdownMenu.Item>
             {PRACAS.map((praca) => (
               <DropdownMenu.Item
@@ -298,7 +298,7 @@ export function FilterBar({
                 onSelect={() => onChange({ ...filtros, praca })}
               >
                 {praca}
-                {filtros.praca === praca && <Check className="h-3.5 w-3.5 text-accent" />}
+                {filtros.praca === praca && <Check className="h-3.5 w-3.5 text-rosa" />}
               </DropdownMenu.Item>
             ))}
           </DropdownMenu.Content>

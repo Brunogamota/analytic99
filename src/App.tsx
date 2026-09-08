@@ -4,10 +4,13 @@ import { PageHeader, type View } from '@/components/PageHeader'
 import { Sidebar, type AbaId } from '@/components/Sidebar'
 import { PERIODO_PADRAO, periodoAnterior, rotuloPeriodo } from '@/lib/periodo'
 import { snapshotsDoFiltro, type Filtros } from '@/lib/queries'
+import { Equipe } from '@/tabs/Equipe'
 import { Gerencial } from '@/tabs/Gerencial'
 import { PromoBanner } from '@/tabs/PromoBanner'
 import { PromoSmart } from '@/tabs/PromoSmart'
 import { PromoSpecial } from '@/tabs/PromoSpecial'
+import { Relatorios } from '@/tabs/Relatorios'
+import { Sugestoes } from '@/tabs/Sugestoes'
 
 const FILTROS_PADRAO: Filtros = {
   periodo: PERIODO_PADRAO,
@@ -18,9 +21,12 @@ const FILTROS_PADRAO: Filtros = {
 
 const TITULOS: Record<AbaId, string> = {
   gerencial: 'Performance do time',
+  sugestoes: 'Sugestões',
+  relatorios: 'Relatórios',
   smart: 'Promo Smart',
   banner: 'Promo Banner',
   special: 'Promo Special',
+  equipe: 'Equipe',
 }
 
 interface ViewSalva extends View {
@@ -87,9 +93,14 @@ export default function App() {
             {aba === 'gerencial' && (
               <Gerencial atual={atual} anterior={anterior} comparacao={comparacao} />
             )}
+            {aba === 'sugestoes' && <Sugestoes atual={atual} anterior={anterior} />}
+            {aba === 'relatorios' && (
+              <Relatorios atual={atual} anterior={anterior} comparacao={comparacao} />
+            )}
             {aba === 'smart' && <PromoSmart atual={atual} />}
             {aba === 'banner' && <PromoBanner atual={atual} />}
             {aba === 'special' && <PromoSpecial atual={atual} />}
+            {aba === 'equipe' && <Equipe filtros={filtros} />}
           </div>
         </div>
       </main>
