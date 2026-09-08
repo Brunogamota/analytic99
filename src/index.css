@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-white text-ink antialiased;
+    font-family: theme('fontFamily.sans');
+    font-feature-settings: 'tnum' 1;
+  }
+}
+
+@layer components {
+  /* Label de coluna e de categoria — o mesmo tratamento em toda a interface. */
+  .label-track {
+    @apply text-micro font-semibold uppercase tracking-[0.06em] text-muted;
+  }
+
+  .chip {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-md border border-control bg-white px-2.5 text-[13px] text-ink outline-none transition-colors;
+  }
+
+  .chip:hover {
+    @apply bg-hairline;
+  }
+
+  .chip[data-state='open'] {
+    @apply bg-hairline;
+  }
+
+  .card {
+    @apply rounded-lg border border-stroke bg-white;
+  }
+
+  .num {
+    @apply text-right tabular-nums;
+  }
+}
