@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { FilterBar } from '@/components/FilterBar'
 import { PageHeader, type View } from '@/components/PageHeader'
 import { Sidebar, type AbaId } from '@/components/Sidebar'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { PERIODO_PADRAO, periodoAnterior, rotuloPeriodo } from '@/lib/periodo'
 import { snapshotsDoFiltro, type Filtros } from '@/lib/queries'
 import { Equipe } from '@/tabs/Equipe'
@@ -47,11 +48,14 @@ export default function App() {
   const subtitulo = `${rotuloPeriodo(filtros.periodo)} · ${atual.parceiros.length} parceiros no recorte`
 
   return (
-    <div className="flex h-screen min-w-[1366px] overflow-hidden">
+    <SidebarProvider className="min-w-[1366px]">
       <Sidebar ativa={aba} onChange={setAba} />
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="px-8 py-6">
+      <SidebarInset>
+        <div className="px-8 pt-4">
+          <SidebarTrigger />
+        </div>
+        <div className="px-8 pb-6 pt-2">
           <PageHeader
             titulo={TITULOS[aba]}
             subtitulo={subtitulo}
@@ -103,7 +107,7 @@ export default function App() {
             {aba === 'equipe' && <Equipe filtros={filtros} />}
           </div>
         </div>
-      </main>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

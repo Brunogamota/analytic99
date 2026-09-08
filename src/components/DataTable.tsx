@@ -52,7 +52,7 @@ export function DataTable<T>({
   return (
     <div className="card overflow-hidden">
       {busca && (
-        <div className="flex items-center gap-2 border-b border-stroke px-4 py-2.5">
+        <div className="flex items-center gap-2 border-b border-stroke px-4 py-3">
           <Search className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} />
           <input
             value={termo}
@@ -123,7 +123,7 @@ export function DataTable<T>({
                     <td
                       key={c.chave}
                       className={cn(
-                        'px-4 py-2.5 text-[13px] text-ink',
+                        'px-4 py-3 text-[13px] text-ink',
                         c.numerica && 'num tabular-nums',
                       )}
                     >

@@ -1,6 +1,16 @@
 import { HOJE, MES_ANTERIOR, MES_ATUAL } from '@/data/seed'
 
-export type PeriodoTipo = 'mes_atual' | 'mes_anterior' | 'custom'
+export type PeriodoTipo =
+  | 'hoje'
+  | 'ontem'
+  | 'ultimos_7'
+  | 'ultimos_30'
+  | 'mes_atual'
+  | 'mes_anterior'
+  | 'custom'
+
+/** Atalhos por mês navegam mês a mês; os por dia deslizam pelo próprio tamanho. */
+const TIPOS_MENSAIS: PeriodoTipo[] = ['mes_atual', 'mes_anterior']
 
 export interface Periodo {
   tipo: PeriodoTipo
@@ -35,6 +45,34 @@ export function periodoDeMes(mes: string, tipo: PeriodoTipo): Periodo {
 }
 
 export const PERIODO_PADRAO = periodoDeMes(MES_ATUAL, 'mes_atual')
+
+export const ATALHOS: { tipo: PeriodoTipo; label: string }[] = [
+  { tipo: 'hoje', label: 'Hoje' },
+  { tipo: 'ontem', label: 'Ontem' },
+  { tipo: 'ultimos_7', label: 'Últimos 7 dias' },
+  { tipo: 'ultimos_30', label: 'Últimos 30 dias' },
+  { tipo: 'mes_atual', label: 'Mês atual' },
+  { tipo: 'mes_anterior', label: 'Mês anterior' },
+]
+
+export function periodoDoAtalho(tipo: PeriodoTipo): Periodo {
+  switch (tipo) {
+    case 'hoje':
+      return { tipo, inicio: HOJE, fim: HOJE }
+    case 'ontem': {
+      const d = addDias(HOJE, -1)
+      return { tipo, inicio: d, fim: d }
+    }
+    case 'ultimos_7':
+      return { tipo, inicio: addDias(HOJE, -6), fim: HOJE }
+    case 'ultimos_30':
+      return { tipo, inicio: addDias(HOJE, -29), fim: HOJE }
+    case 'mes_anterior':
+      return periodoDeMes(MES_ANTERIOR, tipo)
+    default:
+      return periodoDeMes(MES_ATUAL, 'mes_atual')
+  }
+}
 
 export function addDias(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number)
@@ -81,7 +119,7 @@ export function periodoAnterior(p: Periodo): Periodo {
 
 /** Desloca o recorte inteiro para frente ou para trás — usado pelas setas < >. */
 export function deslocar(p: Periodo, direcao: -1 | 1): Periodo {
-  if (p.tipo !== 'custom' || p.inicio.endsWith('-01')) {
+  if (TIPOS_MENSAIS.includes(p.tipo) || (p.tipo === 'custom' && p.inicio.endsWith('-01'))) {
     const [y, m] = p.inicio.split('-').map(Number)
     const alvo = new Date(Date.UTC(y, m - 1 + direcao, 1)).toISOString().slice(0, 7)
     if (alvo > MES_ATUAL) return p
@@ -106,6 +144,9 @@ export function formatarDia(iso: string): string {
 }
 
 export function rotuloPeriodo(p: Periodo): string {
+  if (p.tipo === 'hoje') return 'Hoje'
+  if (p.tipo === 'ontem') return 'Ontem'
+  if (p.inicio === p.fim) return formatarDia(p.inicio)
   if (p.inicio.slice(0, 7) === p.fim.slice(0, 7)) {
     const [y, m] = p.inicio.split('-').map(Number)
     const mesInteiro = p.inicio.endsWith('-01') && p.fim === ultimoDia(p.inicio.slice(0, 7))

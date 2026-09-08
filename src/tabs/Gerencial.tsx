@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { ListaAlertas } from '@/components/AlertBanner'
 import { Coluna, DataTable } from '@/components/DataTable'
+import { GraficosGerencial } from '@/components/GraficosGerencial'
 import { Heatmap } from '@/components/Heatmap'
 import { KpiCard } from '@/components/KpiCard'
 import { Badge, SecaoTitulo } from '@/components/ui'
@@ -218,6 +219,14 @@ export function Gerencial({
 
       <section>
         <Heatmap snapshot={atual} metrica={metrica} onMetricaChange={setMetrica} />
+      </section>
+
+      <section>
+        <SecaoTitulo
+          titulo="Evolução e distribuição"
+          descricao="O mesmo recorte visto por dia, por executivo e por tipo de reclamação."
+        />
+        <GraficosGerencial atual={atual} />
       </section>
 
       <section>

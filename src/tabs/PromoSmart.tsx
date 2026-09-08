@@ -25,7 +25,7 @@ export function PromoSmart({ atual }: { atual: Snapshot }) {
       render: (l) => {
         const razao = l.budget_needed === 0 ? 0 : l.budget_real / l.budget_needed
         return (
-          <span className={razao > 1.5 ? 'font-medium text-[#C23A02]' : undefined}>
+          <span className={razao > 1.5 ? 'font-medium text-laranja-escuro' : undefined}>
             {fmtMoeda(l.budget_real)}
           </span>
         )

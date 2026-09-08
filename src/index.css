@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-white text-ink antialiased;
+    @apply bg-areia text-ink antialiased;
     font-family: theme('fontFamily.sans');
     font-feature-settings: 'tnum' 1;
   }
@@ -22,20 +22,22 @@
     @apply text-micro font-semibold uppercase tracking-[0.06em] text-muted;
   }
 
+  /* Chip pill do Manus: borda fina, sem preenchimento, alvo de clique alto. */
   .chip {
-    @apply inline-flex h-8 items-center gap-1.5 rounded-md border border-control bg-white px-2.5 text-[13px] text-ink outline-none transition-colors;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-stroke bg-white px-3.5 text-[13px] text-ink outline-none transition-colors;
   }
 
   .chip:hover {
     @apply bg-hairline;
   }
 
-  .chip[data-state='open'] {
-    @apply bg-hairline;
+  .chip[data-state='open'],
+  .chip[aria-pressed='true'] {
+    @apply border-control bg-hairline;
   }
 
   .card {
-    @apply rounded-lg border border-stroke bg-white;
+    @apply rounded-card border border-stroke bg-white;
   }
 
   .num {

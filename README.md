@@ -21,13 +21,23 @@ Largura mínima de trabalho: 1366×768.
 React 18 + TypeScript, Vite, Tailwind CSS, Radix UI (dropdown, popover, dialog,
 tooltip), lucide-react, motion (só nas transições da aba Sugestões).
 
-## Paleta
+## Design system
 
-Cores da marca 99: amarelo `#FFDD00` como identidade, laranja `#FC4C02` como
-ação e urgência, preto `#212121` como âncora. O magenta `#E31C79` é ao mesmo
-tempo a cor secundária do 99Pay e a cor da equipe (Barbie Village), então serve
-de acento sem sair da paleta. Vermelho, azul e roxo não são usados em lugar
-nenhum — severidade crítica é laranja, atenção é amarelo.
+O chrome segue o Manus: neutros quentes (fundo `#FAFAF9`, barra lateral
+`#F2F1EF`, item ativo `#E6E4E0`), cantos de 12px, chips em pill com borda fina,
+título de página em serifa e muito respiro. As telas de analytics seguem o
+dashboard que o Manus gera: KPI cards em fundo pastel, gráficos com título e
+subtítulo, seções nomeadas na barra lateral.
+
+Sobre esse chrome entram as cores da marca 99: amarelo `#FFDD00` como
+identidade, laranja `#FC4C02` como ação e urgência, preto `#1C1B1A` como
+âncora. O magenta `#E31C79` é ao mesmo tempo a cor secundária do 99Pay e a cor
+da equipe (Barbie Village), então serve de acento sem sair da paleta. Vermelho,
+azul e roxo não são usados em lugar nenhum — severidade crítica é laranja,
+atenção é amarelo.
+
+A cor dos KPI cards não é decoração: aderência e budget mudam de verde para
+laranja quando cruzam a meta; as métricas de contagem ficam em tons neutros.
 
 O logo da equipe entra em `public/logo-equipe.png` (quadrado, PNG com fundo
 transparente). Enquanto o arquivo não existe, a barra lateral mostra um

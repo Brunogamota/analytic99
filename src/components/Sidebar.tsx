@@ -1,4 +1,5 @@
 import {
+  ChevronsUpDown,
   FileText,
   Image,
   LayoutDashboard,
@@ -7,7 +8,19 @@ import {
   Tag,
   Users,
 } from 'lucide-react'
-import { cn } from '@/lib/format'
+import {
+  Sidebar as SidebarRaiz,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import { LogoEquipe } from './LogoEquipe'
 
 export type AbaId =
@@ -21,7 +34,7 @@ export type AbaId =
 
 const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof Tag }[] }[] = [
   {
-    titulo: 'Performance',
+    titulo: 'Análise',
     itens: [
       { id: 'gerencial', label: 'Gerencial', icone: LayoutDashboard },
       { id: 'sugestoes', label: 'Sugestões', icone: Lightbulb },
@@ -43,62 +56,63 @@ const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof
 ]
 
 export function Sidebar({ ativa, onChange }: { ativa: AbaId; onChange: (id: AbaId) => void }) {
+  const { state } = useSidebar()
+  const recolhida = state === 'collapsed'
+
   return (
-    <nav className="flex w-[200px] shrink-0 flex-col bg-noite">
-      <div className="flex h-[52px] items-center gap-2.5 px-4">
-        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-amarelo">
-          <span className="text-[13px] font-bold leading-none text-ink">99</span>
-        </span>
-        <span className="text-[14px] font-semibold text-white">Performance</span>
-      </div>
-
-      <div className="flex-1 overflow-y-auto pb-4">
-        {SECOES.map((secao) => (
-          <div key={secao.titulo} className="mt-4 first:mt-1">
-            <p className="px-4 pb-1.5 text-micro font-semibold uppercase tracking-[0.06em] text-noite-texto">
-              {secao.titulo}
-            </p>
-            <ul className="px-2">
-              {secao.itens.map((item) => {
-                const Icone = item.icone
-                const selecionada = ativa === item.id
-                return (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      onClick={() => onChange(item.id)}
-                      aria-current={selecionada ? 'page' : undefined}
-                      className={cn(
-                        'flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13px] transition-colors',
-                        selecionada
-                          ? 'bg-noite-claro font-medium text-white'
-                          : 'text-noite-texto hover:bg-noite-claro/60 hover:text-white',
-                      )}
-                    >
-                      <Icone
-                        className={cn(
-                          'h-4 w-4 shrink-0',
-                          selecionada ? 'text-amarelo' : 'text-noite-texto',
-                        )}
-                        strokeWidth={1.75}
-                      />
-                      {item.label}
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex items-center gap-2.5 border-t border-noite-claro px-4 py-3">
-        <LogoEquipe tamanho={30} />
-        <div className="min-w-0">
-          <p className="truncate text-[12px] font-semibold text-white">Barbie Village</p>
-          <p className="truncate text-[11px] text-noite-texto">Equipe comercial</p>
+    <SidebarRaiz>
+      <SidebarHeader>
+        <div className="flex h-9 items-center gap-2.5 px-1.5">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amarelo">
+            <span className="text-[13px] font-bold leading-none text-ink">99</span>
+          </span>
+          {!recolhida && (
+            <span className="truncate text-[15px] font-semibold text-ink">Performance</span>
+          )}
         </div>
-      </div>
-    </nav>
+      </SidebarHeader>
+
+      <SidebarContent>
+        {SECOES.map((secao) => (
+          <SidebarGroup key={secao.titulo}>
+            <SidebarGroupLabel>{secao.titulo}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {secao.itens.map((item) => {
+                  const Icone = item.icone
+                  return (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton
+                        isActive={ativa === item.id}
+                        tooltip={item.label}
+                        onClick={() => onChange(item.id)}
+                      >
+                        <Icone strokeWidth={1.75} />
+                        {!recolhida && <span>{item.label}</span>}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenuButton size="lg" tooltip="Barbie Village" className="gap-2.5">
+          <LogoEquipe tamanho={30} />
+          {!recolhida && (
+            <>
+              <span className="flex min-w-0 flex-1 flex-col items-start">
+                <span className="truncate text-[13px] font-semibold text-ink">Barbie Village</span>
+                <span className="truncate text-[12px] text-muted">Equipe comercial</span>
+              </span>
+              <ChevronsUpDown className="text-muted" strokeWidth={1.75} />
+            </>
+          )}
+        </SidebarMenuButton>
+      </SidebarFooter>
+    </SidebarRaiz>
   )
 }

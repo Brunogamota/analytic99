@@ -3,7 +3,7 @@ import { cn } from '@/lib/format'
 
 /** Tons na paleta 99: laranja carrega urgência, amarelo carrega destaque. */
 const TONS = {
-  verde: 'bg-[#ECFDF5] text-[#047857]',
+  verde: 'bg-verde-fundo text-verde',
   laranja: 'bg-laranja-fundo text-laranja-escuro',
   amarelo: 'bg-amarelo-fundo text-[#8A6D00]',
   rosa: 'bg-rosa-fundo text-rosa-escuro',
@@ -75,7 +75,7 @@ export function BotaoPrimario({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-8 items-center gap-1.5 rounded-md bg-ink px-3 text-[13px] font-medium text-white outline-none transition-colors hover:bg-noite-claro disabled:opacity-40"
+      className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-medium text-white outline-none transition-colors hover:bg-noite-claro disabled:opacity-40"
     >
       {children}
     </button>

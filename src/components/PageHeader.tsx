@@ -31,7 +31,9 @@ export function PageHeader({
   return (
     <div>
       <div className="flex items-baseline gap-3">
-        <h1 className="text-[28px] font-bold leading-9 tracking-[-0.02em] text-ink">{titulo}</h1>
+        <h1 className="font-serif text-[34px] font-normal leading-[42px] tracking-[-0.01em] text-ink">
+          {titulo}
+        </h1>
         <p className="text-[13px] text-muted">{subtitulo}</p>
       </div>
 

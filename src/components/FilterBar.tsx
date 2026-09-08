@@ -12,10 +12,11 @@ import {
   UserRound,
   Users,
 } from 'lucide-react'
-import { dataset, MES_ANTERIOR, MES_ATUAL } from '@/data/seed'
+import { dataset } from '@/data/seed'
 import {
+  ATALHOS,
   deslocar,
-  periodoDeMes,
+  periodoDoAtalho,
   podeAvancar,
   rotuloPeriodo,
   type Periodo,
@@ -73,7 +74,7 @@ function PeriodoFiltro({
         type="button"
         aria-label="Período anterior"
         onClick={() => onChange(deslocar(periodo, -1))}
-        className="chip w-8 justify-center px-0"
+        className="chip w-9 justify-center px-0"
       >
         <ChevronLeft className="h-4 w-4 text-muted" strokeWidth={1.75} />
       </button>
@@ -90,17 +91,12 @@ function PeriodoFiltro({
         <Popover.Portal>
           <Popover.Content align="start" sideOffset={6} className={cn(menuClasses, 'w-[260px] p-2')}>
             <p className="label-track px-1 pb-1.5">Atalhos</p>
-            {(
-              [
-                ['mes_atual', 'Mês atual', MES_ATUAL],
-                ['mes_anterior', 'Mês anterior', MES_ANTERIOR],
-              ] as const
-            ).map(([tipo, label, mes]) => (
+            {ATALHOS.map(({ tipo, label }) => (
               <button
                 key={tipo}
                 type="button"
                 onClick={() => {
-                  onChange(periodoDeMes(mes, tipo))
+                  onChange(periodoDoAtalho(tipo))
                   setAberto(false)
                 }}
                 className={cn(itemClasses, 'w-full hover:bg-hairline')}
@@ -151,7 +147,7 @@ function PeriodoFiltro({
         aria-label="Próximo período"
         disabled={!podeAvancar(periodo)}
         onClick={() => onChange(deslocar(periodo, 1))}
-        className="chip w-8 justify-center px-0 disabled:opacity-40"
+        className="chip w-9 justify-center px-0 disabled:opacity-40"
       >
         <ChevronRight className="h-4 w-4 text-muted" strokeWidth={1.75} />
       </button>
