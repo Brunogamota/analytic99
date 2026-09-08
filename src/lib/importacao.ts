@@ -1095,11 +1095,25 @@ export function mapearParaTabela(
   return { mapeamento, confiancas, score: 0.75 * cobertura + 0.25 * aproveitamento }
 }
 
-export function detectarTabela(colunas: string[], linhas: Record<string, string>[]): Deteccao {
+function candidatosDeTodasAsColunas(colunas: string[], linhas: Record<string, string>[]) {
   const candidatos: Record<string, { campo: CampoAlvo; confianca: number }[]> = {}
   for (const coluna of colunas) {
     candidatos[coluna] = pontuarColuna(coluna, amostraDaColuna(linhas, coluna))
   }
+  return candidatos
+}
+
+/** Mapeamento contra uma tabela escolhida à mão — o usuário pode discordar da detecção. */
+export function mapearColunas(
+  colunas: string[],
+  linhas: Record<string, string>[],
+  tabela: string,
+): { mapeamento: Record<string, string | null>; confiancas: Record<string, number>; score: number } {
+  return mapearParaTabela(colunas, candidatosDeTodasAsColunas(colunas, linhas), tabela)
+}
+
+export function detectarTabela(colunas: string[], linhas: Record<string, string>[]): Deteccao {
+  const candidatos = candidatosDeTodasAsColunas(colunas, linhas)
 
   let melhor: Deteccao = { tabela: TABELAS[0].id, confianca: 0, mapeamento: {} }
   for (const t of TABELAS) {
