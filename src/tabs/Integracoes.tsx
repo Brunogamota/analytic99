@@ -210,7 +210,7 @@ function DialogConfigurar({
           {concluido ? (
             <div className="flex flex-col items-center py-6 text-center">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amarelo-fundo">
-                <Check className="h-4 w-4 text-[#8A6D00]" strokeWidth={2.5} />
+                <Check className="h-4 w-4 text-[#A8125A]" strokeWidth={2.5} />
               </span>
               <p className="mt-3 text-[14px] font-medium text-ink">
                 {integracao.nome} está aguardando credenciais
@@ -257,7 +257,7 @@ function DialogConfigurar({
                   <Item key={frase}>{frase}</Item>
                 ))}
               </ul>
-              <p className="mt-3 rounded-md bg-amarelo-fundo px-3 py-2 text-[12px] leading-5 text-[#8A6D00]">
+              <p className="mt-3 rounded-md bg-amarelo-fundo px-3 py-2 text-[12px] leading-5 text-[#A8125A]">
                 Marcar como aguardando credenciais não conecta nada e não dispara pedido nenhum:
                 é um lembrete na tela de que a pendência é de fora do produto.
               </p>
@@ -360,7 +360,7 @@ export function Integracoes() {
 
   return (
     <div>
-      <div className="mb-4 flex items-start gap-2 rounded-card bg-amarelo-fundo px-3.5 py-2.5 text-[13px] leading-5 text-[#8A6D00]">
+      <div className="mb-4 flex items-start gap-2 rounded-card bg-amarelo-fundo px-3.5 py-2.5 text-[13px] leading-5 text-[#A8125A]">
         <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
         <p>
           Catálogo de integrações: nenhuma delas troca dados com o dashboard ainda — configurar

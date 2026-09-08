@@ -4,11 +4,11 @@ import { cn } from '@/lib/format'
 /** Cores de fundo do monograma, na paleta da marca. */
 const FUNDOS = [
   { bg: '#E31C79', texto: '#FFFFFF' },
-  { bg: '#1C1B1A', texto: '#FFFFFF' },
-  { bg: '#FFDD00', texto: '#1C1B1A' },
-  { bg: '#FC4C02', texto: '#FFFFFF' },
-  { bg: '#047857', texto: '#FFFFFF' },
-  { bg: '#78716C', texto: '#FFFFFF' },
+  { bg: '#111111', texto: '#FFFFFF' },
+  { bg: '#F286B7', texto: '#111111' },
+  { bg: '#E31C79', texto: '#FFFFFF' },
+  { bg: '#111111', texto: '#FFFFFF' },
+  { bg: '#737373', texto: '#FFFFFF' },
 ] as const
 
 /** Hash estável do nome: a mesma pessoa mantém a mesma cor entre telas. */

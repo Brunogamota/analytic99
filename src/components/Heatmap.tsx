@@ -96,7 +96,7 @@ export function Heatmap({
             <span className="text-[11px] text-muted">0</span>
             <div
               className="h-2 w-24 rounded-sm"
-              style={{ background: 'linear-gradient(to right, #FFFFFF, #FFDD00, #FC4C02)' }}
+              style={{ background: 'linear-gradient(to right, #FFFFFF, #F286B7, #E31C79)' }}
             />
             <span className="text-[11px] text-muted">{formatar(max, metrica)}</span>
           </div>

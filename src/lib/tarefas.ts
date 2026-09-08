@@ -14,10 +14,10 @@ export type StatusTarefa = {
 }
 
 export const STATUS: Record<'planejada' | 'andamento' | 'concluida' | 'atrasada', StatusTarefa> = {
-  planejada: { id: 'planejada', nome: 'Planejada', cor: '#78716C' },
-  andamento: { id: 'andamento', nome: 'Em andamento', cor: '#FFDD00' },
-  concluida: { id: 'concluida', nome: 'Concluída', cor: '#047857' },
-  atrasada: { id: 'atrasada', nome: 'Atrasada', cor: '#FC4C02' },
+  planejada: { id: 'planejada', nome: 'Planejada', cor: '#737373' },
+  andamento: { id: 'andamento', nome: 'Em andamento', cor: '#F286B7' },
+  concluida: { id: 'concluida', nome: 'Concluída', cor: '#111111' },
+  atrasada: { id: 'atrasada', nome: 'Atrasada', cor: '#E31C79' },
 }
 
 export interface Tarefa {

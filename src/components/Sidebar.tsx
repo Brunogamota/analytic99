@@ -77,8 +77,8 @@ export function Sidebar({ ativa, onChange }: { ativa: AbaId; onChange: (id: AbaI
     <SidebarRaiz>
       <SidebarHeader>
         <div className="flex h-9 items-center gap-2.5 px-1.5">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amarelo">
-            <span className="text-[13px] font-bold leading-none text-ink">99</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink">
+            <span className="text-[13px] font-bold leading-none text-white">99</span>
           </span>
           {!recolhida && (
             <span className="truncate text-[15px] font-semibold text-ink">Performance</span>

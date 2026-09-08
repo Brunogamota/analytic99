@@ -104,7 +104,7 @@ function DrillDownExecutivo({
                     <td
                       className={cn(
                         'num px-5 py-2.5 text-[13px]',
-                        c.horas === 0 && 'font-semibold text-[#C23A02]',
+                        c.horas === 0 && 'font-semibold text-[#A8125A]',
                       )}
                     >
                       {fmtDec(c.horas, 1)}
@@ -164,7 +164,7 @@ export function Gerencial({
       numerica: true,
       valor: (l) => l.ativos,
       render: (l) => (
-        <span className={cn(l.ativos < l.parceiros && 'font-medium text-[#C23A02]')}>
+        <span className={cn(l.ativos < l.parceiros && 'font-medium text-[#A8125A]')}>
           {l.ativos}
         </span>
       ),
@@ -183,7 +183,7 @@ export function Gerencial({
       numerica: true,
       valor: (l) => l.razao_budget,
       render: (l) => (
-        <span className={cn(l.razao_budget > 1.1 && 'font-medium text-[#C23A02]')}>
+        <span className={cn(l.razao_budget > 1.1 && 'font-medium text-[#A8125A]')}>
           {fmtPct(l.razao_budget)}
         </span>
       ),

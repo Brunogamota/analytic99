@@ -1,11 +1,14 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/format'
 
-/** Tons na paleta 99: laranja carrega urgência, amarelo carrega destaque. */
+/**
+ * Rosa marca o que pede ação; o resto fica em cinza. "Verde" continua no
+ * dicionário para não quebrar chamadas, mas é o preto do texto sobre cinza.
+ */
 const TONS = {
-  verde: 'bg-verde-fundo text-verde',
-  laranja: 'bg-laranja-fundo text-laranja-escuro',
-  amarelo: 'bg-amarelo-fundo text-[#8A6D00]',
+  verde: 'bg-hairline text-ink',
+  laranja: 'bg-rosa-fundo text-rosa-escuro',
+  amarelo: 'bg-amarelo-fundo text-rosa-escuro',
   rosa: 'bg-rosa-fundo text-rosa-escuro',
   cinza: 'bg-hairline text-muted',
 } as const

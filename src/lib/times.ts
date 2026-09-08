@@ -4,7 +4,7 @@ import type { Membro } from './equipe'
 import { alertas, nomeExecutivo, type Alerta, type Snapshot } from './queries'
 
 /** Só tokens da paleta: rosa, amarelo, preto, laranja e verde. */
-export const CORES_TIME: string[] = ['#E31C79', '#FFDD00', '#1C1B1A', '#FC4C02', '#047857']
+export const CORES_TIME: string[] = ['#E31C79', '#F286B7', '#111111', '#E31C79', '#111111']
 
 export interface Time {
   id: string
@@ -34,7 +34,7 @@ export function iniciais(nome: string): string {
 }
 
 /** O amarelo da marca não sustenta texto branco. */
-export const corTexto = (cor: string): string => (cor === '#FFDD00' ? '#1C1B1A' : '#FFFFFF')
+export const corTexto = (cor: string): string => (cor === '#F286B7' ? '#111111' : '#FFFFFF')
 
 export function timesIniciais(): Time[] {
   return dataset.gerentes.map((g, i) => {

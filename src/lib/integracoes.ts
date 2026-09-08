@@ -102,7 +102,7 @@ export const INTEGRACOES: Integracao[] = [
       'Aprovação de segurança e do jurídico para enviar dado de parceiro a serviço externo.',
     ],
     // OpenAI pediu a remoção do logo do simple-icons: aqui vale monograma.
-    cor: '#10A37F',
+    cor: '#111111',
     sigla: 'GPT',
   },
   {
@@ -122,7 +122,7 @@ export const INTEGRACOES: Integracao[] = [
       'Credenciais do Microsoft 365 se a importação for direto do OneDrive, e não por upload.',
     ],
     // Microsoft também saiu do simple-icons: monograma, não uma imitação do ícone.
-    cor: '#217346',
+    cor: '#111111',
     sigla: 'XL',
   },
   {

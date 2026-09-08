@@ -9,7 +9,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/format'
 
 /** Paleta 99 na ordem em que as séries devem consumir as cores. */
-export const CORES_SERIE = ['#E31C79', '#1C1B1A', '#FFDD00', '#FC4C02', '#78716C'] as const
+export const CORES_SERIE = ['#E31C79', '#111111', '#F286B7', '#A8125A', '#A3A3A3'] as const
 
 const indicadorVariants = cva('shrink-0', {
   variants: {

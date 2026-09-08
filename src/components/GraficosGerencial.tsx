@@ -116,7 +116,7 @@ export function GraficosGerencial({ atual }: { atual: Snapshot }) {
                 tickFormatter={receitaCurta}
               />
               <ChartTooltip
-                cursor={{ stroke: '#D6D3D1', strokeWidth: 1 }}
+                cursor={{ stroke: '#E7E7E7', strokeWidth: 1 }}
                 content={
                   <ChartTooltipContent
                     formatarValor={(v, nome) => (nome === 'Receita' ? fmtMoeda(v) : fmtInt(v))}
@@ -187,13 +187,13 @@ export function GraficosGerencial({ atual }: { atual: Snapshot }) {
                   tickFormatter={nomeCurto}
                 />
                 <ChartTooltip
-                  cursor={{ fill: '#F0EFED' }}
+                  cursor={{ fill: '#F5F5F5' }}
                   content={
                     <ChartTooltipContent formatarValor={(v) => fmtPct(v)} />
                   }
                 />
                 <ReferenceLine x={META_ADERENCIA} stroke={CORES_SERIE[1]} strokeDasharray="4 4">
-                  <Label value="meta 80%" position="insideTopRight" fill="#78716C" fontSize={11} />
+                  <Label value="meta 80%" position="insideTopRight" fill="#737373" fontSize={11} />
                 </ReferenceLine>
                 <Bar dataKey="aderencia" name="Aderência" radius={[0, 4, 4, 0]} barSize={14}>
                   {/* A cor separa quem cumpriu a meta de quem não cumpriu — é o
@@ -201,7 +201,7 @@ export function GraficosGerencial({ atual }: { atual: Snapshot }) {
                   {aderencia.map((linha) => (
                     <Cell
                       key={linha.executivo}
-                      fill={linha.aderencia >= META_ADERENCIA ? '#047857' : '#FC4C02'}
+                      fill={linha.aderencia >= META_ADERENCIA ? '#111111' : '#E31C79'}
                     />
                   ))}
                 </Bar>

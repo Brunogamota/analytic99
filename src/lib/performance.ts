@@ -252,11 +252,11 @@ export interface DescricaoFaixa {
 }
 
 const FAIXAS: Record<Faixa, DescricaoFaixa> = {
-  excelente: { faixa: 'excelente', rotulo: 'Excelente', cor: '#047857', tom: 'verde' },
-  bom: { faixa: 'bom', rotulo: 'Bom', cor: '#FFDD00', tom: 'amarelo' },
-  atencao: { faixa: 'atencao', rotulo: 'Precisa de atenção', cor: '#FC4C02', tom: 'laranja' },
-  critico: { faixa: 'critico', rotulo: 'Crítico', cor: '#C23A02', tom: 'laranja' },
-  indefinida: { faixa: 'indefinida', rotulo: 'Sem base', cor: '#D6D3D1', tom: 'cinza' },
+  excelente: { faixa: 'excelente', rotulo: 'Excelente', cor: '#111111', tom: 'verde' },
+  bom: { faixa: 'bom', rotulo: 'Bom', cor: '#F286B7', tom: 'amarelo' },
+  atencao: { faixa: 'atencao', rotulo: 'Precisa de atenção', cor: '#E31C79', tom: 'laranja' },
+  critico: { faixa: 'critico', rotulo: 'Crítico', cor: '#A8125A', tom: 'laranja' },
+  indefinida: { faixa: 'indefinida', rotulo: 'Sem base', cor: '#E7E7E7', tom: 'cinza' },
 }
 
 export function faixaNota(valor: number | null): DescricaoFaixa {
@@ -463,10 +463,10 @@ export function linhasDoRecorte(
 export type Status = 'bom' | 'atencao' | 'ruim' | 'neutro'
 
 export const COR_STATUS: Record<Status, string> = {
-  bom: '#047857',
-  atencao: '#FFDD00',
-  ruim: '#FC4C02',
-  neutro: '#D6D3D1',
+  bom: '#111111',
+  atencao: '#F286B7',
+  ruim: '#E31C79',
+  neutro: '#E7E7E7',
 }
 
 export interface Metrica {

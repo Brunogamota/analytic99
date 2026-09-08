@@ -5,24 +5,30 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        // Títulos de página, como o Manus usa.
         serif: ['Instrument Serif', 'ui-serif', 'Georgia', 'Times New Roman', 'serif'],
       },
+      /**
+       * Rosa, branco e preto. A estrutura é a do iFood — uma cor de marca só,
+       * sobre branco e preto, com neutros puros. O rosa aqui é o da equipe.
+       *
+       * Os nomes semânticos continuam existindo para não quebrar chamadas, mas
+       * apontam todos para a mesma família: o que precisa de ação sai em rosa,
+       * o que está bem fica em preto ou cinza. Cor só onde há decisão.
+       */
       colors: {
-        // Neutros quentes do Manus.
-        areia: { DEFAULT: '#FAFAF9', barra: '#F2F1EF', ativo: '#E6E4E0' },
-        ink: '#1C1B1A',
-        muted: '#78716C',
-        hairline: '#F0EFED',
-        stroke: '#E4E1DD',
-        control: '#D6D3D1',
-        // Paleta 99: amarelo é identidade, laranja é ação, magenta é o acento
-        // que também é a cor da equipe.
-        amarelo: { DEFAULT: '#FFDD00', claro: '#FFEB66', fundo: '#FEF6D9' },
-        laranja: { DEFAULT: '#FC4C02', escuro: '#C23A02', fundo: '#FDEDE6' },
-        rosa: { DEFAULT: '#E31C79', escuro: '#A8125A', fundo: '#FCE9F1' },
-        verde: { DEFAULT: '#047857', fundo: '#E7F5EE' },
-        noite: { DEFAULT: '#1C1B1A', claro: '#3A3835', texto: '#A8A29E' },
+        rosa: { DEFAULT: '#E31C79', escuro: '#A8125A', claro: '#F286B7', fundo: '#FDEAF2' },
+        // Alerta forte e atenção leve: dois pesos do mesmo rosa.
+        laranja: { DEFAULT: '#E31C79', escuro: '#A8125A', fundo: '#FDEAF2' },
+        amarelo: { DEFAULT: '#F286B7', claro: '#F9C4DC', fundo: '#FDF3F8' },
+        // "Positivo" não ganha cor própria: fica no preto do texto.
+        verde: { DEFAULT: '#111111', fundo: '#F5F5F5' },
+        ink: '#111111',
+        muted: '#737373',
+        hairline: '#F5F5F5',
+        stroke: '#E7E7E7',
+        control: '#D4D4D4',
+        areia: { DEFAULT: '#FFFFFF', barra: '#FAFAFA', ativo: '#F0F0F0' },
+        noite: { DEFAULT: '#111111', claro: '#2A2A2A', texto: '#A3A3A3' },
       },
       fontSize: {
         micro: ['11px', '16px'],

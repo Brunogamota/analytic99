@@ -189,7 +189,7 @@ export function SidebarMenuButton({
       data-active={isActive}
       className={cn(
         sidebarMenuButtonVariants({ size }),
-        !isActive && 'text-[#57534E]',
+        !isActive && 'text-[#525252]',
         state === 'collapsed' && 'justify-center px-0',
         className,
       )}
