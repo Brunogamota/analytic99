@@ -7,11 +7,14 @@ import { PERIODO_PADRAO, periodoAnterior, rotuloPeriodo } from '@/lib/periodo'
 import { snapshotsDoFiltro, type Filtros } from '@/lib/queries'
 import { Equipe } from '@/tabs/Equipe'
 import { Gerencial } from '@/tabs/Gerencial'
+import { Integracoes } from '@/tabs/Integracoes'
 import { PromoBanner } from '@/tabs/PromoBanner'
 import { PromoSmart } from '@/tabs/PromoSmart'
 import { PromoSpecial } from '@/tabs/PromoSpecial'
 import { Relatorios } from '@/tabs/Relatorios'
 import { Sugestoes } from '@/tabs/Sugestoes'
+import { Tarefas } from '@/tabs/Tarefas'
+import { Times } from '@/tabs/Times'
 
 const FILTROS_PADRAO: Filtros = {
   periodo: PERIODO_PADRAO,
@@ -27,7 +30,10 @@ const TITULOS: Record<AbaId, string> = {
   smart: 'Promo Smart',
   banner: 'Promo Banner',
   special: 'Promo Special',
+  times: 'Times',
   equipe: 'Equipe',
+  tarefas: 'Tarefas',
+  integracoes: 'Integrações',
 }
 
 interface ViewSalva extends View {
@@ -104,7 +110,10 @@ export default function App() {
             {aba === 'smart' && <PromoSmart atual={atual} />}
             {aba === 'banner' && <PromoBanner atual={atual} />}
             {aba === 'special' && <PromoSpecial atual={atual} />}
+            {aba === 'times' && <Times atual={atual} />}
             {aba === 'equipe' && <Equipe filtros={filtros} />}
+            {aba === 'tarefas' && <Tarefas />}
+            {aba === 'integracoes' && <Integracoes />}
           </div>
         </div>
       </SidebarInset>

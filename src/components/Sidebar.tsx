@@ -1,12 +1,15 @@
 import {
   ChevronsUpDown,
   FileText,
+  GanttChartSquare,
   Image,
   LayoutDashboard,
+  Plug,
   Lightbulb,
   Sparkles,
   Tag,
   Users,
+  UsersRound,
 } from 'lucide-react'
 import {
   Sidebar as SidebarRaiz,
@@ -30,7 +33,10 @@ export type AbaId =
   | 'smart'
   | 'banner'
   | 'special'
+  | 'times'
   | 'equipe'
+  | 'tarefas'
+  | 'integracoes'
 
 const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof Tag }[] }[] = [
   {
@@ -51,7 +57,15 @@ const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof
   },
   {
     titulo: 'Time',
-    itens: [{ id: 'equipe', label: 'Equipe', icone: Users }],
+    itens: [
+      { id: 'times', label: 'Times', icone: UsersRound },
+      { id: 'equipe', label: 'Equipe', icone: Users },
+      { id: 'tarefas', label: 'Tarefas', icone: GanttChartSquare },
+    ],
+  },
+  {
+    titulo: 'Sistema',
+    itens: [{ id: 'integracoes', label: 'Integrações', icone: Plug }],
   },
 ]
 

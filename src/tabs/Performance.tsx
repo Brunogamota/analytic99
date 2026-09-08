@@ -383,21 +383,21 @@ export function Performance({
   const colunasCategoria: Coluna<LinhaPerformance>[] = [
     {
       chave: 'participacao',
-      label: '% da receita',
+      label: '% receita',
       numerica: true,
       valor: (l) => l.participacao_receita,
       render: (l) => fmtPct(l.participacao_receita),
     },
     {
       chave: 'var_receita',
-      label: `Δ receita vs. ${comparacao}`,
+      label: 'Δ receita',
       numerica: true,
       valor: (l) => l.var_receita,
       render: (l) => <Variacao v={l.var_receita} />,
     },
     {
       chave: 'var_conversao',
-      label: 'Δ conversão',
+      label: 'Δ conv.',
       numerica: true,
       valor: (l) => l.var_conversao,
       render: (l) => <Variacao v={l.var_conversao} />,
@@ -412,12 +412,14 @@ export function Performance({
     render: (l) => <NotaBadge nota={l.nota} />,
   }
 
+  // A nota fica logo depois do nome: é a coluna que a página promete, e no
+  // recorte de categoria a tabela é larga o bastante para rolar na horizontal.
   const colunas: Coluna<LinhaPerformance>[] = [
     colunaRotulo,
+    colunaNota,
     ...(recorte === 'categoria' ? [] : [colunaGerente]),
     ...colunasComuns,
     ...(recorte === 'categoria' ? colunasCategoria : []),
-    colunaNota,
   ]
 
   return (
@@ -495,13 +497,16 @@ export function Performance({
               </div>
             </div>
 
-            <div className="card p-5">
+            <div className="card flex flex-col p-5">
               <p className="label-track">
                 Métricas do recorte · comparado com {comparacao}
               </p>
-              <div className="mt-4 grid grid-cols-3 grid-rows-2 gap-x-6 gap-y-5">
+              <div className="mt-4 grid flex-1 auto-rows-fr grid-cols-3 gap-x-6 gap-y-4">
                 {destaque.metricas.map((m) => (
-                  <div key={m.chave} className="border-l border-hairline pl-4">
+                  <div
+                    key={m.chave}
+                    className="flex flex-col justify-center border-l border-hairline pl-4"
+                  >
                     <div className="flex items-center gap-1.5">
                       <span
                         className="h-2 w-2 shrink-0 rounded-full"
@@ -580,7 +585,11 @@ export function Performance({
           <section>
             <SecaoTitulo
               titulo={`Detalhe por ${ROTULO_COLUNA[recorte].toLowerCase()}`}
-              descricao="Clique em uma linha para transformá-la em filtro da página."
+              descricao={
+                recorte === 'categoria'
+                  ? `Clique em uma linha para transformá-la em filtro da página. As colunas Δ comparam com ${comparacao}.`
+                  : 'Clique em uma linha para transformá-la em filtro da página.'
+              }
             />
             <DataTable
               colunas={colunas}

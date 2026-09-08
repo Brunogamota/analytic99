@@ -25,13 +25,16 @@
     "lodash.throttle": "^4.1.1",
     "lucide-react": "^0.469.0",
     "motion": "^13.2.0",
+    "papaparse": "^5.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^3.10.1"
+    "recharts": "^3.10.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^22.20.1",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

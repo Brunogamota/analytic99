@@ -538,7 +538,7 @@ export function destaqueGeral(atual: Snapshot, anterior: Snapshot, comparacao: s
       chave: 'pedidos',
       rotulo: 'Pedidos',
       valor: fmtInt(atual.totalPedidos),
-      detalhe: `${fmtDec(atual.totalHoras, 0)} horas online`,
+      detalhe: `${fmtInt(atual.totalHoras)} horas online`,
       status: 'neutro',
     },
     {

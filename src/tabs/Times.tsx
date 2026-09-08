@@ -863,9 +863,11 @@ export function Times({ atual }: { atual: Snapshot }) {
                       label="Aderência média"
                       valor={metricas.parceiros === 0 ? '—' : fmtPct(metricas.aderencia)}
                       contexto={
-                        metricas.aderencia >= 0.7
-                          ? 'meta de 70% atendida'
-                          : 'abaixo da meta de 70%'
+                        metricas.parceiros === 0
+                          ? 'sem carteira no recorte'
+                          : metricas.aderencia >= 0.7
+                            ? 'meta de 70% atendida'
+                            : 'abaixo da meta de 70%'
                       }
                     />
                     <Cartao
@@ -952,6 +954,7 @@ export function Times({ atual }: { atual: Snapshot }) {
                               name="Parceiros ativos"
                               radius={[0, 4, 4, 0]}
                               barSize={14}
+                              isAnimationActive={false}
                             >
                               {ordenadas.map((l) => (
                                 <Cell
