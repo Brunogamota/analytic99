@@ -20,6 +20,27 @@ export const STATUS: Record<'planejada' | 'andamento' | 'concluida' | 'atrasada'
   atrasada: { id: 'atrasada', nome: 'Atrasada', cor: '#E31C79' },
 }
 
+export type Prioridade = 'urgente' | 'alta' | 'normal' | 'baixa'
+
+export interface NivelPrioridade {
+  id: Prioridade
+  nome: string
+  cor: string
+}
+
+/**
+ * Quatro níveis na paleta da marca: o que pede ação sai em rosa, o resto fica
+ * em preto ou cinza. A ordem do objeto é a ordem que o menu mostra.
+ */
+export const PRIORIDADES: Record<Prioridade, NivelPrioridade> = {
+  urgente: { id: 'urgente', nome: 'Urgente', cor: '#E31C79' },
+  alta: { id: 'alta', nome: 'Alta', cor: '#F286B7' },
+  normal: { id: 'normal', nome: 'Normal', cor: '#111111' },
+  baixa: { id: 'baixa', nome: 'Baixa', cor: '#737373' },
+}
+
+export const LISTA_PRIORIDADES: NivelPrioridade[] = Object.values(PRIORIDADES)
+
 export interface Tarefa {
   id: string
   nome: string
@@ -28,6 +49,8 @@ export interface Tarefa {
   status: StatusTarefa
   responsavel: string
   grupo: string
+  prioridade: Prioridade
+  descricao: string
 }
 
 export const FRENTES = [
@@ -237,8 +260,67 @@ export function tarefasIniciais(): Tarefa[] {
       status: statusDe(fim, rascunho.marca),
       responsavel: executivo.nome,
       grupo: rascunho.grupo,
+      prioridade: 'normal',
+      descricao: '',
     }
   })
+}
+
+/** Soma dias preservando o horário local — `setDate` já normaliza o mês. */
+function somaDias(data: Date, dias: number): Date {
+  const d = new Date(data)
+  d.setDate(d.getDate() + dias)
+  return d
+}
+
+export const PRAZO_PADRAO_DIAS = 7
+
+export interface EntradaTarefa {
+  nome: string
+  responsavel?: string
+  grupo?: string
+  status?: StatusTarefa
+  prioridade?: Prioridade
+  inicio?: Date | null
+  fim?: Date | null
+  descricao?: string
+}
+
+/**
+ * Erro de preenchimento em uma frase, ou `null` quando dá para criar. A tarefa
+ * nasce só com o nome: tudo o mais é opcional.
+ */
+export function validarTarefa(entrada: EntradaTarefa): string | null {
+  if (!entrada.nome.trim()) return 'Dê um nome à tarefa para poder criá-la.'
+  if (entrada.inicio && entrada.fim && entrada.fim < entrada.inicio) {
+    return 'O fim do prazo não pode ser antes do início.'
+  }
+  return null
+}
+
+/** Sufixo crescente: duas tarefas criadas no mesmo milissegundo não colidem. */
+let sequencia = 0
+
+export function novaTarefa(entrada: EntradaTarefa): Tarefa {
+  const inicio = entrada.inicio ?? HOJE_DATA
+  const fim = entrada.fim ?? somaDias(inicio, PRAZO_PADRAO_DIAS)
+
+  // Status só é derivado quando ninguém escolheu: prazo já vencido nasce
+  // atrasado, como acontece com as tarefas do plano inicial.
+  const status = entrada.status ?? (fim < HOJE_DATA ? STATUS.atrasada : STATUS.planejada)
+
+  sequencia += 1
+  return {
+    id: `T-${Date.now().toString(36)}-${sequencia}`,
+    nome: entrada.nome.trim(),
+    inicio,
+    fim,
+    status,
+    responsavel: entrada.responsavel?.trim() ?? '',
+    grupo: entrada.grupo ?? FRENTES[0],
+    prioridade: entrada.prioridade ?? 'normal',
+    descricao: entrada.descricao?.trim() ?? '',
+  }
 }
 
 export interface Marcador {

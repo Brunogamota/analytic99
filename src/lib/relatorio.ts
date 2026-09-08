@@ -1,5 +1,6 @@
 import { dataset } from '@/data/seed'
 import type { Categoria, DimParceiro, FatoPromo, TipoPromo } from '@/data/types'
+import { ultimoDia, type Periodo } from './periodo'
 import {
   nomeExecutivo,
   nomeGerente,
@@ -82,6 +83,18 @@ export const nomeGerenteDoExecutivo = (idExecutivo: string) =>
 /** Base zero não tem variação: devolve null para a interface mostrar "—". */
 export function variacao(atual: number, anterior: number): number | null {
   return anterior === 0 ? null : (atual - anterior) / anterior
+}
+
+/** Taxa por 100 — mesma regra: sem denominador não existe número, existe "—". */
+export function porCem(parte: number, total: number): number | null {
+  return total === 0 ? null : (parte * 100) / total
+}
+
+/** Sufixo do arquivo exportado: `2026-09` no mês inteiro, o intervalo cru fora dele. */
+export function sufixoPeriodo(p: Periodo): string {
+  const mes = p.inicio.slice(0, 7)
+  const mesInteiro = p.inicio.endsWith('-01') && p.fim === ultimoDia(mes)
+  return mesInteiro ? mes : `${p.inicio}_a_${p.fim}`
 }
 
 export function conversao(pedidos: number, horas: number): number {

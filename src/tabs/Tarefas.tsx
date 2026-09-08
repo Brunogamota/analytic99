@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { Plus } from 'lucide-react'
+import { NovaTarefa } from '@/components/NovaTarefa'
 import { Vazio } from '@/components/ui'
 import {
   GanttCreateMarkerTrigger,
@@ -16,8 +18,10 @@ import {
   type GanttFeature,
   type Range,
 } from '@/components/ui/gantt'
+import { dataset } from '@/data/seed'
 import { cn } from '@/lib/format'
 import {
+  FRENTES,
   HOJE_DATA,
   MARCADORES,
   STATUS,
@@ -54,11 +58,14 @@ function statusAposMover(atual: StatusTarefa, fim: Date): StatusTarefa {
 
 const primeiroNome = (nome: string) => nome.split(' ')[0]
 
+const RESPONSAVEIS = dataset.executivos.filter((e) => e.ativo).map((e) => e.nome)
+
 export function Tarefas() {
   const [tarefas, setTarefas] = useState<Tarefa[]>(() => tarefasIniciais())
   const [marcadores, setMarcadores] = useState<Marcador[]>(MARCADORES)
   const [escala, setEscala] = useState<Range>('monthly')
   const [zoom, setZoom] = useState(100)
+  const [criando, setCriando] = useState(false)
 
   const grupos = useMemo(() => {
     const mapa = new Map<string, Tarefa[]>()
@@ -90,9 +97,19 @@ export function Tarefas() {
 
   return (
     <div>
-      <p className="mb-3 text-[13px] text-muted">
-        {tarefas.length} tarefas distribuídas · {atrasadas} atrasadas · {concluidas} concluídas.
-      </p>
+      <div className="mb-3 flex items-center gap-3">
+        <p className="text-[13px] text-muted">
+          {tarefas.length} tarefas distribuídas · {atrasadas} atrasadas · {concluidas} concluídas.
+        </p>
+        <button
+          type="button"
+          onClick={() => setCriando(true)}
+          className="ml-auto flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-rosa px-4 text-[13px] font-medium text-white outline-none transition-colors hover:bg-rosa-escuro focus-visible:ring-2 focus-visible:ring-rosa/30"
+        >
+          <Plus className="h-4 w-4" strokeWidth={2} />
+          Nova tarefa
+        </button>
+      </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {ESCALAS.map((opcao) => (
@@ -170,9 +187,11 @@ export function Tarefas() {
                           style={{ backgroundColor: tarefa.status.cor }}
                         />
                         <span className="truncate">{tarefa.nome}</span>
-                        <span className="shrink-0 text-muted">
-                          · {primeiroNome(tarefa.responsavel)}
-                        </span>
+                        {tarefa.responsavel && (
+                          <span className="shrink-0 text-muted">
+                            · {primeiroNome(tarefa.responsavel)}
+                          </span>
+                        )}
                       </GanttFeatureItem>
                     ))}
                   </GanttFeatureListGroup>
@@ -206,6 +225,14 @@ export function Tarefas() {
           </GanttProvider>
         )}
       </div>
+
+      <NovaTarefa
+        aberto={criando}
+        onFechar={() => setCriando(false)}
+        onCriar={(tarefa) => setTarefas((anteriores) => [...anteriores, tarefa])}
+        responsaveis={RESPONSAVEIS}
+        frentes={FRENTES}
+      />
     </div>
   )
 }

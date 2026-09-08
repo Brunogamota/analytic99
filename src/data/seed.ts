@@ -6,10 +6,15 @@ import type {
   DimGerente,
   DimParceiro,
   FatoHoras,
+  FatoOcorrencia,
   FatoPedido,
   FatoPromo,
   FatoReclamacao,
   HistBanner,
+  MotivoOcorrencia,
+  Responsabilidade,
+  SubtipoReclamacao,
+  TipoOcorrencia,
   TipoPromo,
   TipoReclamacao,
 } from './types'
@@ -34,6 +39,9 @@ export const CASOS: {
   executivoPerfeito: string
   perdeuBanner: string[]
   qualidadeCaindo: string[]
+  chargebackRecorrente: string[]
+  reembolsoAlto: string[]
+  naoEntregueMesAtual: string[]
 } = {
   zeroHoras: ['P07', 'P23', 'P41'],
   pizzaAlmoco: ['P13', 'P34'],
@@ -43,6 +51,10 @@ export const CASOS: {
   executivoPerfeito: 'E04',
   perdeuBanner: ['P03', 'P11', 'P22', 'P37'],
   qualidadeCaindo: ['P09', 'P26', 'P48'],
+  // Operação de problemas: cada caso sustenta uma leitura da aba de perdas.
+  chargebackRecorrente: ['P12'],
+  reembolsoAlto: ['P29'],
+  naoEntregueMesAtual: ['P08', 'P17'],
 }
 
 const GERENTES: DimGerente[] = [
@@ -125,6 +137,12 @@ function todosOsDias(): string[] {
   return MESES.flatMap(diasDoMes).filter((d) => d >= INICIO)
 }
 
+/** Deslocamento de data em UTC — o seed nunca lê o relógio da máquina. */
+function addDiasIso(iso: string, n: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10)
+}
+
 function diaSemana(iso: string): number {
   const [y, m, d] = iso.split('-').map(Number)
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay()
@@ -139,6 +157,157 @@ const CURVA_JANTAR: Record<number, number> = {
   21: 0.83,
   22: 0.44,
   23: 0.21,
+}
+
+/** Cada subtipo pertence a uma família só — é o que faz os dois cortes baterem. */
+const SUBTIPOS_POR_TIPO: Record<TipoReclamacao, SubtipoReclamacao[]> = {
+  atraso: ['atraso_entrega', 'atraso_preparo'],
+  pedido_errado: ['pedido_incompleto', 'pedido_trocado', 'cobranca_indevida'],
+  qualidade: ['comida_fria', 'comida_estragada', 'embalagem_violada'],
+  cancelamento: [
+    'cancelado_pelo_parceiro',
+    'cancelado_por_falta_de_entregador',
+    'cancelado_pelo_cliente',
+  ],
+}
+
+type Peso<T extends string> = [T, number][]
+
+/** Frequência relativa de cada motivo na operação de delivery. */
+const PESO_MOTIVO: Peso<MotivoOcorrencia> = [
+  ['atraso_excessivo', 20],
+  ['item_faltando', 18],
+  ['pedido_nao_entregue', 14],
+  ['item_errado', 14],
+  ['qualidade_comida', 12],
+  ['embalagem_danificada', 7],
+  ['restaurante_fechado', 6],
+  ['endereco_incorreto', 5],
+  ['cobranca_duplicada', 5],
+  ['fraude_suspeita', 3],
+]
+
+/** O desfecho financeiro depende do motivo: item faltando vira reembolso, cobrança duplicada vira estorno. */
+const TIPO_POR_MOTIVO: Record<MotivoOcorrencia, Peso<TipoOcorrencia>> = {
+  pedido_nao_entregue: [
+    ['reembolso', 62],
+    ['estorno', 20],
+    ['cancelamento', 12],
+    ['chargeback', 6],
+  ],
+  atraso_excessivo: [
+    ['cancelamento', 48],
+    ['reembolso', 40],
+    ['estorno', 12],
+  ],
+  item_faltando: [
+    ['reembolso', 78],
+    ['estorno', 22],
+  ],
+  item_errado: [
+    ['reembolso', 70],
+    ['estorno', 22],
+    ['cancelamento', 8],
+  ],
+  qualidade_comida: [
+    ['reembolso', 80],
+    ['estorno', 20],
+  ],
+  embalagem_danificada: [
+    ['reembolso', 85],
+    ['estorno', 15],
+  ],
+  cobranca_duplicada: [
+    ['estorno', 55],
+    ['chargeback', 35],
+    ['reembolso', 10],
+  ],
+  fraude_suspeita: [
+    ['chargeback', 72],
+    ['estorno', 22],
+    ['reembolso', 6],
+  ],
+  endereco_incorreto: [
+    ['cancelamento', 55],
+    ['reembolso', 30],
+    ['estorno', 15],
+  ],
+  restaurante_fechado: [
+    ['cancelamento', 82],
+    ['reembolso', 18],
+  ],
+}
+
+const RESPONSAVEL_POR_MOTIVO: Record<MotivoOcorrencia, Peso<Responsabilidade>> = {
+  pedido_nao_entregue: [
+    ['entregador', 46],
+    ['plataforma', 22],
+    ['parceiro', 18],
+    ['indefinida', 14],
+  ],
+  atraso_excessivo: [
+    ['entregador', 40],
+    ['parceiro', 38],
+    ['plataforma', 18],
+    ['cliente', 4],
+  ],
+  item_faltando: [
+    ['parceiro', 86],
+    ['entregador', 8],
+    ['indefinida', 6],
+  ],
+  item_errado: [
+    ['parceiro', 88],
+    ['plataforma', 6],
+    ['indefinida', 6],
+  ],
+  qualidade_comida: [
+    ['parceiro', 92],
+    ['plataforma', 4],
+    ['indefinida', 4],
+  ],
+  embalagem_danificada: [
+    ['parceiro', 55],
+    ['entregador', 40],
+    ['indefinida', 5],
+  ],
+  cobranca_duplicada: [
+    ['plataforma', 78],
+    ['indefinida', 12],
+    ['parceiro', 10],
+  ],
+  fraude_suspeita: [
+    ['cliente', 52],
+    ['indefinida', 26],
+    ['plataforma', 14],
+    ['parceiro', 8],
+  ],
+  endereco_incorreto: [
+    ['cliente', 72],
+    ['entregador', 16],
+    ['plataforma', 8],
+    ['indefinida', 4],
+  ],
+  restaurante_fechado: [
+    ['parceiro', 90],
+    ['plataforma', 8],
+    ['indefinida', 2],
+  ],
+}
+
+/** Reembolso de item faltando devolve parte; não entregue e cancelamento devolvem tudo. */
+const MOTIVOS_PARCIAIS: MotivoOcorrencia[] = ['item_faltando', 'item_errado', 'embalagem_danificada']
+
+function sorteioPonderado<T extends string>(pesos: Peso<T>, sorteio: number): T {
+  let total = 0
+  for (const [, peso] of pesos) total += peso
+  let acc = 0
+  const alvo = sorteio * total
+  for (const [valor, peso] of pesos) {
+    acc += peso
+    if (alvo < acc) return valor
+  }
+  return pesos[pesos.length - 1][0]
 }
 
 function build(): Dataset {
@@ -315,6 +484,9 @@ function build(): Dataset {
   // ---- fato_reclamacoes ----------------------------------------------------
   const reclamacoes: FatoReclamacao[] = []
   const tiposReclamacao: TipoReclamacao[] = ['atraso', 'pedido_errado', 'qualidade', 'cancelamento']
+  // Gerador próprio: o detalhe da reclamação e as ocorrências entram sem
+  // deslocar nenhum sorteio das tabelas que já existiam.
+  const rngDetalhe = makeRng(31_2026)
   let seqReclamacao = 0
   for (const p of parceiros) {
     // Taxa por 100 pedidos: a maioria opera bem, alguns degradam no mês atual.
@@ -328,14 +500,103 @@ function build(): Dataset {
       if (rng.next() < esperado - n) n++
       for (let k = 0; k < n; k++) {
         seqReclamacao++
+        const tipo = rng.pick(tiposReclamacao)
         reclamacoes.push({
           id_reclamacao: `R${String(seqReclamacao).padStart(6, '0')}`,
           id_parceiro: p.id_parceiro,
           data: dia,
-          tipo: rng.pick(tiposReclamacao),
+          tipo,
+          subtipo: rngDetalhe.pick(SUBTIPOS_POR_TIPO[tipo]),
           gravidade: rng.bool(0.18) ? 'alta' : rng.bool(0.45) ? 'media' : 'baixa',
         })
       }
+    }
+  }
+
+  // ---- fato_ocorrencias ----------------------------------------------------
+  const rngOco = makeRng(77_2026)
+  const ocorrencias: FatoOcorrencia[] = []
+
+  const pedidosPorParceiro = new Map<string, FatoPedido[]>()
+  for (const o of pedidos) {
+    const lista = pedidosPorParceiro.get(o.id_parceiro) ?? []
+    lista.push(o)
+    pedidosPorParceiro.set(o.id_parceiro, lista)
+  }
+
+  let seqOcorrencia = 0
+  for (const p of parceiros) {
+    const doParceiro = pedidosPorParceiro.get(p.id_parceiro) ?? []
+    if (doParceiro.length === 0) continue
+
+    // A carteira sadia fica entre 1,3% e 3% dos pedidos; os casos plantados destoam.
+    let taxa = rngOco.float(0.013, 0.03)
+    const pesoDe = new Map<MotivoOcorrencia, number>(
+      PESO_MOTIVO.map(([m, w]): [MotivoOcorrencia, number] => [m, w * rngOco.float(0.6, 1.4)]),
+    )
+    const reforcar = (m: MotivoOcorrencia, fator: number) =>
+      pesoDe.set(m, (pesoDe.get(m) ?? 0) * fator)
+
+    if (CASOS.chargebackRecorrente.includes(p.id_parceiro)) {
+      taxa = rngOco.float(0.045, 0.06)
+      reforcar('fraude_suspeita', 16)
+      reforcar('cobranca_duplicada', 10)
+    }
+    if (CASOS.reembolsoAlto.includes(p.id_parceiro)) {
+      taxa = rngOco.float(0.085, 0.11)
+      reforcar('item_faltando', 3)
+      reforcar('qualidade_comida', 2.5)
+    }
+    if (CASOS.qualidadeCaindo.includes(p.id_parceiro)) reforcar('qualidade_comida', 2)
+
+    const pico = CASOS.naoEntregueMesAtual.includes(p.id_parceiro)
+    const jaVistos = new Map<MotivoOcorrencia, string[]>()
+
+    for (const pedido of doParceiro) {
+      const noPico = pico && pedido.data.startsWith(MES_ATUAL)
+      if (rngOco.next() >= taxa * (noPico ? 4.5 : 1)) continue
+
+      const motivo: MotivoOcorrencia =
+        noPico && rngOco.bool(0.72)
+          ? 'pedido_nao_entregue'
+          : sorteioPonderado([...pesoDe], rngOco.next())
+      const tipo = sorteioPonderado(TIPO_POR_MOTIVO[motivo], rngOco.next())
+      const responsabilidade = sorteioPonderado(RESPONSAVEL_POR_MOTIVO[motivo], rngOco.next())
+
+      const fracao = MOTIVOS_PARCIAIS.includes(motivo)
+        ? rngOco.float(0.25, 0.7)
+        : tipo === 'reembolso'
+          ? rngOco.float(0.7, 1)
+          : 1
+      const valor = Math.min(pedido.valor, Number((pedido.valor * fracao).toFixed(2)))
+
+      // Estorno e chargeback já saíram do caixa; reembolso ainda pode estar em análise.
+      let ressarcido = valor
+      if (tipo === 'reembolso') {
+        ressarcido = rngOco.bool(0.12) ? 0 : Number((valor * rngOco.float(0.5, 1)).toFixed(2))
+      }
+
+      // Reincidência é recente, não histórica: o mesmo motivo já bateu duas
+      // vezes nos 30 dias anteriores neste parceiro.
+      const datas = jaVistos.get(motivo) ?? []
+      const limite = addDiasIso(pedido.data, -30)
+      const recentes = datas.filter((d) => d >= limite).length
+      datas.push(pedido.data)
+      jaVistos.set(motivo, datas)
+
+      seqOcorrencia++
+      ocorrencias.push({
+        id_ocorrencia: `X${String(seqOcorrencia).padStart(6, '0')}`,
+        id_pedido: pedido.id_pedido,
+        id_parceiro: p.id_parceiro,
+        data: pedido.data,
+        tipo,
+        motivo,
+        responsabilidade,
+        valor,
+        valor_ressarcido: Math.min(valor, ressarcido),
+        reincidente: recentes >= 2,
+      })
     }
   }
 
@@ -347,8 +608,23 @@ function build(): Dataset {
     ...CASOS.budgetEstourado,
     ...CASOS.aderenciaTravada,
     ...CASOS.perdeuBanner,
+    ...CASOS.chargebackRecorrente,
+    ...CASOS.reembolsoAlto,
+    ...CASOS.naoEntregueMesAtual,
   ]) {
     if (!porId.has(id)) throw new Error(`Caso plantado aponta para parceiro inexistente: ${id}`)
+  }
+
+  // Sanidade: ocorrência sem pedido real, ou acima do valor do pedido, é dado inventado.
+  const valorDoPedido = new Map(pedidos.map((o) => [o.id_pedido, o.valor]))
+  for (const oc of ocorrencias) {
+    const base = valorDoPedido.get(oc.id_pedido)
+    if (base === undefined) {
+      throw new Error(`Ocorrência ${oc.id_ocorrencia} aponta para pedido inexistente: ${oc.id_pedido}`)
+    }
+    if (oc.valor > base || oc.valor_ressarcido > oc.valor || oc.valor < 0) {
+      throw new Error(`Ocorrência ${oc.id_ocorrencia} tem valor incoerente com o pedido.`)
+    }
   }
 
   return {
@@ -360,6 +636,7 @@ function build(): Dataset {
     horas,
     banners,
     reclamacoes,
+    ocorrencias,
     meses: MESES,
     hoje: HOJE,
   }

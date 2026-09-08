@@ -5,9 +5,13 @@ import { Sidebar, type AbaId } from '@/components/Sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { PERIODO_PADRAO, periodoAnterior, rotuloPeriodo } from '@/lib/periodo'
 import { snapshotsDoFiltro, type Filtros } from '@/lib/queries'
+import { filtrosDoPerfil, PERFIL_GESTORA, type PerfilAtivo } from '@/lib/perfil'
+import { SeletorPerfil } from '@/components/SeletorPerfil'
 import { Equipe } from '@/tabs/Equipe'
 import { Gerencial } from '@/tabs/Gerencial'
+import { Importar } from '@/tabs/Importar'
 import { Integracoes } from '@/tabs/Integracoes'
+import { MinhaVisao } from '@/tabs/MinhaVisao'
 import { PromoBanner } from '@/tabs/PromoBanner'
 import { PromoSmart } from '@/tabs/PromoSmart'
 import { PromoSpecial } from '@/tabs/PromoSpecial'
@@ -34,6 +38,8 @@ const TITULOS: Record<AbaId, string> = {
   equipe: 'Equipe',
   tarefas: 'Tarefas',
   integracoes: 'Integrações',
+  importar: 'Importar dados',
+  minha_visao: 'Minha visão',
 }
 
 interface ViewSalva extends View {
@@ -47,8 +53,11 @@ export default function App() {
     { id: 'padrao', nome: 'Padrão', filtros: FILTROS_PADRAO },
   ])
   const [viewAtiva, setViewAtiva] = useState('padrao')
+  const [perfil, setPerfil] = useState<PerfilAtivo>(PERFIL_GESTORA)
 
-  const { atual, anterior } = useMemo(() => snapshotsDoFiltro(filtros), [filtros])
+  // Na visão emprestada o recorte é o da pessoa, e ela não sai dele pelo filtro.
+  const filtrosEfetivos = useMemo(() => filtrosDoPerfil(perfil, filtros), [perfil, filtros])
+  const { atual, anterior } = useMemo(() => snapshotsDoFiltro(filtrosEfetivos), [filtrosEfetivos])
   const comparacao = rotuloPeriodo(periodoAnterior(filtros.periodo))
 
   const subtitulo = `${rotuloPeriodo(filtros.periodo)} · ${atual.parceiros.length} parceiros no recorte`
@@ -58,8 +67,15 @@ export default function App() {
       <Sidebar ativa={aba} onChange={setAba} />
 
       <SidebarInset>
-        <div className="px-8 pt-4">
+        <div className="flex items-center justify-between px-8 pt-4">
           <SidebarTrigger />
+          <SeletorPerfil
+            perfil={perfil}
+            onTrocar={(p) => {
+              setPerfil(p)
+              setAba(p.tipo === 'executivo' ? 'minha_visao' : 'gerencial')
+            }}
+          />
         </div>
         <div className="px-8 pb-6 pt-2">
           <PageHeader
@@ -114,6 +130,10 @@ export default function App() {
             {aba === 'equipe' && <Equipe filtros={filtros} />}
             {aba === 'tarefas' && <Tarefas />}
             {aba === 'integracoes' && <Integracoes />}
+            {aba === 'importar' && <Importar />}
+            {aba === 'minha_visao' && (
+              <MinhaVisao atual={atual} anterior={anterior} perfil={perfil} />
+            )}
           </div>
         </div>
       </SidebarInset>

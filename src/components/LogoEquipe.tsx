@@ -2,33 +2,28 @@ import { useState } from 'react'
 import { cn } from '@/lib/format'
 
 /**
- * O arquivo real da equipe entra em `public/logo-equipe.png`. Enquanto ele não
- * existe, o monograma segura o lugar sem quebrar o layout da barra.
+ * Basta soltar o arquivo oficial em `public/logo-equipe.png` que ele assume o
+ * lugar sozinho. Sem ele, cai no símbolo de `logo-equipe.svg`, que é uma
+ * silhueta e não uma cópia do mascote.
  */
-export function LogoEquipe({ tamanho = 32 }: { tamanho?: number }) {
-  const [falhou, setFalhou] = useState(false)
-
-  if (falhou) {
-    return (
-      <span
-        aria-label="Barbie Village"
-        style={{ width: tamanho, height: tamanho }}
-        className="flex shrink-0 items-center justify-center rounded-md bg-rosa ring-2 ring-amarelo"
-      >
-        <span className="text-[11px] font-bold leading-none tracking-tight text-white">BV</span>
-      </span>
-    )
-  }
+export function LogoEquipe({
+  tamanho = 32,
+  className,
+}: {
+  tamanho?: number
+  className?: string
+}) {
+  const [origem, setOrigem] = useState('/logo-equipe.png')
 
   return (
     <img
-      src="/logo-equipe.png"
+      src={origem}
       alt="Barbie Village"
       width={tamanho}
       height={tamanho}
-      onError={() => setFalhou(true)}
-      className={cn('shrink-0 rounded-md object-contain')}
+      onError={() => setOrigem('/logo-equipe.svg')}
       style={{ width: tamanho, height: tamanho }}
+      className={cn('shrink-0 rounded-lg object-contain', className)}
     />
   )
 }

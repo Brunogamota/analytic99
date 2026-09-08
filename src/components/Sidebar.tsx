@@ -8,6 +8,8 @@ import {
   Lightbulb,
   Sparkles,
   Tag,
+  Upload,
+  UserRound,
   Users,
   UsersRound,
 } from 'lucide-react'
@@ -25,6 +27,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { LogoEquipe } from './LogoEquipe'
+import { Avatar } from './ui/avatar'
 
 export type AbaId =
   | 'gerencial'
@@ -36,7 +39,9 @@ export type AbaId =
   | 'times'
   | 'equipe'
   | 'tarefas'
+  | 'minha_visao'
   | 'integracoes'
+  | 'importar'
 
 const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof Tag }[] }[] = [
   {
@@ -61,11 +66,15 @@ const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof
       { id: 'times', label: 'Times', icone: UsersRound },
       { id: 'equipe', label: 'Equipe', icone: Users },
       { id: 'tarefas', label: 'Tarefas', icone: GanttChartSquare },
+      { id: 'minha_visao', label: 'Minha visão', icone: UserRound },
     ],
   },
   {
     titulo: 'Sistema',
-    itens: [{ id: 'integracoes', label: 'Integrações', icone: Plug }],
+    itens: [
+      { id: 'importar', label: 'Importar dados', icone: Upload },
+      { id: 'integracoes', label: 'Integrações', icone: Plug },
+    ],
   },
 ]
 
@@ -76,12 +85,17 @@ export function Sidebar({ ativa, onChange }: { ativa: AbaId; onChange: (id: AbaI
   return (
     <SidebarRaiz>
       <SidebarHeader>
-        <div className="flex h-9 items-center gap-2.5 px-1.5">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink">
-            <span className="text-[13px] font-bold leading-none text-white">99</span>
-          </span>
+        <div className="flex h-10 items-center gap-2.5 px-1.5">
+          <LogoEquipe tamanho={32} />
           {!recolhida && (
-            <span className="truncate text-[15px] font-semibold text-ink">Performance</span>
+            <span className="min-w-0">
+              <span className="block truncate text-[14px] font-semibold leading-tight text-ink">
+                Barbie Village
+              </span>
+              <span className="block truncate text-[11px] leading-tight text-muted">
+                Performance 99
+              </span>
+            </span>
           )}
         </div>
       </SidebarHeader>
@@ -114,13 +128,13 @@ export function Sidebar({ ativa, onChange }: { ativa: AbaId; onChange: (id: AbaI
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenuButton size="lg" tooltip="Barbie Village" className="gap-2.5">
-          <LogoEquipe tamanho={30} />
+        <SidebarMenuButton size="lg" tooltip="Marina Prado" className="gap-2.5">
+          <Avatar nome="Marina Prado" tamanho="md" status="online" />
           {!recolhida && (
             <>
               <span className="flex min-w-0 flex-1 flex-col items-start">
-                <span className="truncate text-[13px] font-semibold text-ink">Barbie Village</span>
-                <span className="truncate text-[12px] text-muted">Equipe comercial</span>
+                <span className="truncate text-[13px] font-semibold text-ink">Marina Prado</span>
+                <span className="truncate text-[12px] text-muted">Gestora comercial</span>
               </span>
               <ChevronsUpDown className="text-muted" strokeWidth={1.75} />
             </>

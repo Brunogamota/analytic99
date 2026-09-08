@@ -145,6 +145,9 @@ export async function lerArquivo(file: File): Promise<ArquivoLido> {
 
 export type TipoCampo = 'texto' | 'numero' | 'data' | 'booleano' | 'id'
 
+/** Tabelas do `dataset` contra as quais um id do arquivo pode ser conferido. */
+export type Referencia = 'parceiros' | 'executivos' | 'gerentes' | 'pedidos'
+
 export interface CampoAlvo {
   id: string
   tabela: string
@@ -160,7 +163,7 @@ export interface CampoAlvo {
   /** Prefixo esperado dos ids desta coluna: `P07`, `E04`, `O000123`… */
   prefixoId?: string
   /** Quando presente, o id precisa existir no dataset carregado. */
-  referencia?: 'parceiros' | 'executivos' | 'gerentes'
+  referencia?: Referencia
   /** Conjunto fechado de valores aceitos. */
   dominio?: string[]
   exemplo: [string, string, string]
@@ -175,6 +178,11 @@ export const TABELAS: { id: string; rotulo: string; descricao: string }[] = [
   { id: 'fato_horas', rotulo: 'fato_horas', descricao: 'Horas online por loja e dia' },
   { id: 'hist_banner', rotulo: 'hist_banner', descricao: 'Banner ativo por mês' },
   { id: 'fato_reclamacao', rotulo: 'fato_reclamacao', descricao: 'Reclamações por tipo e gravidade' },
+  {
+    id: 'fato_ocorrencia',
+    rotulo: 'fato_ocorrencia',
+    descricao: 'Reembolso, estorno, cancelamento e chargeback',
+  },
 ]
 
 const SIN_PARCEIRO = [
@@ -234,7 +242,16 @@ const SIN_DATA = [
   'day',
 ]
 
-const SIN_ATIVO = ['ativo', 'ativa', 'status', 'active', 'is active', 'habilitado', 'em atividade']
+const SIN_ATIVO = [
+  'ativo',
+  'ativa',
+  'status',
+  'situacao',
+  'active',
+  'is active',
+  'habilitado',
+  'em atividade',
+]
 
 function campo(c: CampoAlvo): CampoAlvo {
   return c
@@ -822,6 +839,37 @@ export const CAMPOS: CampoAlvo[] = [
     exemplo: ['atraso', 'qualidade', 'pedido_errado'],
   }),
   campo({
+    id: 'fato_reclamacao.subtipo',
+    tabela: 'fato_reclamacao',
+    campo: 'subtipo',
+    rotulo: 'Subtipo',
+    tipo: 'texto',
+    sinonimos: [
+      'subtipo',
+      'sub tipo',
+      'detalhe',
+      'detalhe do tipo',
+      'motivo detalhado',
+      'subcategoria',
+      'subtype',
+      'sub reason',
+    ],
+    dominio: [
+      'atraso_entrega',
+      'atraso_preparo',
+      'pedido_incompleto',
+      'pedido_trocado',
+      'comida_fria',
+      'comida_estragada',
+      'embalagem_violada',
+      'cobranca_indevida',
+      'cancelado_pelo_parceiro',
+      'cancelado_por_falta_de_entregador',
+      'cancelado_pelo_cliente',
+    ],
+    exemplo: ['atraso_entrega', 'comida_fria', 'pedido_trocado'],
+  }),
+  campo({
     id: 'fato_reclamacao.gravidade',
     tabela: 'fato_reclamacao',
     campo: 'gravidade',
@@ -831,6 +879,151 @@ export const CAMPOS: CampoAlvo[] = [
     obrigatorio: true,
     dominio: ['baixa', 'media', 'alta'],
     exemplo: ['baixa', 'alta', 'media'],
+  }),
+
+  // ---- fato_ocorrencia ----------------------------------------------------
+  campo({
+    id: 'fato_ocorrencia.id_ocorrencia',
+    tabela: 'fato_ocorrencia',
+    campo: 'id_ocorrencia',
+    rotulo: 'ID da ocorrência',
+    tipo: 'id',
+    sinonimos: [
+      'id ocorrencia',
+      'ocorrencia',
+      'cod ocorrencia',
+      'caso',
+      'id caso',
+      'case id',
+      'incident',
+      'incident id',
+    ],
+    obrigatorio: true,
+    chave: true,
+    prefixoId: 'X',
+    exemplo: ['X900001', 'X900002', 'X900003'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.id_pedido',
+    tabela: 'fato_ocorrencia',
+    campo: 'id_pedido',
+    rotulo: 'Pedido da ocorrência',
+    tipo: 'id',
+    sinonimos: [
+      'id pedido',
+      'pedido',
+      'cod pedido',
+      'codigo pedido',
+      'numero do pedido',
+      'order',
+      'order id',
+    ],
+    obrigatorio: true,
+    prefixoId: 'O',
+    referencia: 'pedidos',
+    exemplo: ['O000101', 'O000102', 'O000103'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.id_parceiro',
+    tabela: 'fato_ocorrencia',
+    campo: 'id_parceiro',
+    rotulo: 'ID do parceiro',
+    tipo: 'id',
+    sinonimos: SIN_PARCEIRO,
+    obrigatorio: true,
+    prefixoId: 'P',
+    referencia: 'parceiros',
+    exemplo: ['P01', 'P02', 'P03'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.data',
+    tabela: 'fato_ocorrencia',
+    campo: 'data',
+    rotulo: 'Data da ocorrência',
+    tipo: 'data',
+    sinonimos: SIN_DATA,
+    obrigatorio: true,
+    exemplo: ['2026-09-01', '2026-09-02', '2026-09-03'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.tipo',
+    tabela: 'fato_ocorrencia',
+    campo: 'tipo',
+    rotulo: 'Tipo da ocorrência',
+    tipo: 'texto',
+    sinonimos: ['tipo', 'tipo ocorrencia', 'tipo da ocorrencia', 'evento', 'case type'],
+    obrigatorio: true,
+    dominio: ['reembolso', 'estorno', 'cancelamento', 'chargeback'],
+    exemplo: ['reembolso', 'estorno', 'chargeback'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.motivo',
+    tabela: 'fato_ocorrencia',
+    campo: 'motivo',
+    rotulo: 'Motivo',
+    tipo: 'texto',
+    sinonimos: ['motivo', 'razao', 'causa', 'reason', 'root cause'],
+    obrigatorio: true,
+    dominio: [
+      'pedido_nao_entregue',
+      'atraso_excessivo',
+      'item_faltando',
+      'item_errado',
+      'qualidade_comida',
+      'embalagem_danificada',
+      'cobranca_duplicada',
+      'fraude_suspeita',
+      'endereco_incorreto',
+      'restaurante_fechado',
+    ],
+    exemplo: ['item_faltando', 'atraso_excessivo', 'fraude_suspeita'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.responsabilidade',
+    tabela: 'fato_ocorrencia',
+    campo: 'responsabilidade',
+    rotulo: 'Responsabilidade',
+    tipo: 'texto',
+    sinonimos: ['responsabilidade', 'culpa', 'responsavel', 'liability', 'fault', 'atribuicao'],
+    dominio: ['parceiro', 'entregador', 'plataforma', 'cliente', 'indefinida'],
+    exemplo: ['parceiro', 'entregador', 'plataforma'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.valor',
+    tabela: 'fato_ocorrencia',
+    campo: 'valor',
+    rotulo: 'Valor da ocorrência',
+    tipo: 'numero',
+    sinonimos: ['valor', 'valor da ocorrencia', 'valor envolvido', 'amount', 'value', 'preco'],
+    obrigatorio: true,
+    exemplo: ['78,40', '54,90', '46,00'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.valor_ressarcido',
+    tabela: 'fato_ocorrencia',
+    campo: 'valor_ressarcido',
+    rotulo: 'Valor ressarcido',
+    tipo: 'numero',
+    sinonimos: [
+      'valor ressarcido',
+      'ressarcido',
+      'valor devolvido',
+      'devolvido',
+      'reembolsado',
+      'valor reembolsado',
+      'refunded',
+      'refund amount',
+    ],
+    exemplo: ['78,40', '27,45', '0'],
+  }),
+  campo({
+    id: 'fato_ocorrencia.reincidente',
+    tabela: 'fato_ocorrencia',
+    campo: 'reincidente',
+    rotulo: 'Reincidente',
+    tipo: 'booleano',
+    sinonimos: ['reincidente', 'reincidencia', 'repetiu', 'recorrente', 'repeat', 'is repeat'],
+    exemplo: ['0', '1', '0'],
   }),
 ]
 
@@ -883,6 +1076,9 @@ function pontuarNome(nomeNorm: string, alvo: CampoAlvo): number {
 
 export interface PerfilFormato {
   total: number
+  /** Fração da amostra por prefixo de id encontrado: `{ P: 1 }`. */
+  prefixos: Record<string, number>
+  /** Prefixo que domina a coluna, quando existe um. */
   prefixoId: string | null
   fracaoData: number
   fracaoMesAno: number
@@ -897,6 +1093,7 @@ export function perfilar(amostra: string[]): PerfilFormato {
   if (total === 0) {
     return {
       total: 0,
+      prefixos: {},
       prefixoId: null,
       fracaoData: 0,
       fracaoMesAno: 0,
@@ -911,8 +1108,7 @@ export function perfilar(amostra: string[]): PerfilFormato {
   let booleanos = 0
   let numeros = 0
   let inteiros = 0
-  const prefixos = new Set<string>()
-  let comPrefixo = 0
+  const contagemPrefixo = new Map<string, number>()
 
   for (const v of valores) {
     if (paraData(v)) datas++
@@ -925,20 +1121,40 @@ export function perfilar(amostra: string[]): PerfilFormato {
     }
     const id = RE_ID.exec(v)
     if (id && n === null) {
-      prefixos.add(id[1].toUpperCase())
-      comPrefixo++
+      const p = id[1].toUpperCase()
+      contagemPrefixo.set(p, (contagemPrefixo.get(p) ?? 0) + 1)
     }
+  }
+
+  const prefixos: Record<string, number> = {}
+  let prefixoId: string | null = null
+  for (const [p, n] of contagemPrefixo) {
+    prefixos[p] = n / total
+    if (prefixos[p] >= 0.6) prefixoId = p
   }
 
   return {
     total,
-    prefixoId: prefixos.size === 1 && comPrefixo / total > 0.9 ? [...prefixos][0] : null,
+    prefixos,
+    prefixoId,
     fracaoData: datas / total,
     fracaoMesAno: mesAno / total,
     fracaoBooleano: booleanos / total,
     fracaoNumero: numeros / total,
     fracaoInteiro: inteiros / total,
   }
+}
+
+/**
+ * Fração da amostra que confirma o formato → pontuação. A escada existe para
+ * que um punhado de linhas sujas não derrube o reconhecimento de uma coluna
+ * que, no geral, é claramente daquele tipo — sujeira é problema da validação.
+ */
+function grau(fracao: number): number {
+  if (fracao >= 0.9) return 1
+  if (fracao >= 0.6) return 0.7
+  if (fracao >= 0.3) return 0.35
+  return 0
 }
 
 function fracaoNoDominio(amostra: string[], dominio: string[]): number {
@@ -954,8 +1170,10 @@ function pontuarFormato(alvo: CampoAlvo, perfil: PerfilFormato, amostra: string[
   switch (alvo.tipo) {
     case 'id': {
       if (alvo.prefixoId) {
-        if (perfil.prefixoId === alvo.prefixoId) return 1
-        if (perfil.prefixoId) return 0 // id de outra família derruba o palpite pelo nome
+        const meu = perfil.prefixos[alvo.prefixoId] ?? 0
+        if (meu >= 0.3) return grau(meu)
+        // Id de outra família derruba o palpite vindo do nome.
+        if (perfil.prefixoId) return 0
         if (perfil.fracaoData > 0.8 || perfil.fracaoBooleano > 0.8) return 0
         if (perfil.fracaoNumero > 0.9) return 0.3
         return 0.35
@@ -963,26 +1181,20 @@ function pontuarFormato(alvo: CampoAlvo, perfil: PerfilFormato, amostra: string[
       return perfil.prefixoId ? 0.6 : 0.35
     }
     case 'data': {
-      if (alvo.campo === 'mes_ano') {
-        if (perfil.fracaoMesAno > 0.9) return 1
-        return perfil.fracaoData > 0.9 ? 0.35 : 0
-      }
-      if (perfil.fracaoData > 0.9) return 1
-      return perfil.fracaoMesAno > 0.9 ? 0.35 : 0
+      const proprio = alvo.campo === 'mes_ano' ? perfil.fracaoMesAno : perfil.fracaoData
+      const outro = alvo.campo === 'mes_ano' ? perfil.fracaoData : perfil.fracaoMesAno
+      const pontos = grau(proprio)
+      return pontos > 0 ? pontos : grau(outro) * 0.35
     }
     case 'booleano':
-      return perfil.fracaoBooleano > 0.9 ? 1 : 0
+      return grau(perfil.fracaoBooleano)
     case 'numero': {
-      if (perfil.fracaoNumero < 0.9) return 0
       // 0/1 puro é quase sempre flag: não deixa uma medida numérica levar a coluna.
       if (perfil.fracaoBooleano > 0.9) return 0.45
-      return 1
+      return grau(perfil.fracaoNumero)
     }
     case 'texto': {
-      if (alvo.dominio) {
-        const dentro = fracaoNoDominio(amostra, alvo.dominio)
-        return dentro > 0.9 ? 1 : dentro > 0.4 ? 0.5 : 0
-      }
+      if (alvo.dominio) return grau(fracaoNoDominio(amostra, alvo.dominio))
       if (perfil.prefixoId || perfil.fracaoData > 0.9 || perfil.fracaoBooleano > 0.9) return 0.15
       if (perfil.fracaoNumero > 0.9) return 0.25
       return 0.85
@@ -1010,7 +1222,7 @@ export function pontuarColuna(
     let confianca: number
     if (nome === 0) {
       // Sem sinal de nome só o formato de assinatura forte (prefixo de id) sustenta.
-      confianca = formato === 1 && alvo.prefixoId ? 0.5 : formato * 0.15
+      confianca = formato >= 0.7 && alvo.prefixoId ? 0.5 : formato * 0.15
     } else {
       confianca = 0.55 * nome + 0.45 * formato
       if (formato === 0) confianca = Math.min(confianca, 0.22)
@@ -1155,10 +1367,22 @@ export interface Problema {
   motivo: string
 }
 
-const REFERENCIAS: Record<'parceiros' | 'executivos' | 'gerentes', Set<string>> = {
-  parceiros: new Set(dataset.parceiros.map((p) => p.id_parceiro)),
-  executivos: new Set(dataset.executivos.map((e) => e.id_executivo)),
-  gerentes: new Set(dataset.gerentes.map((g) => g.id_gerente)),
+const FONTE_REFERENCIA: Record<Referencia, () => string[]> = {
+  parceiros: () => dataset.parceiros.map((p) => p.id_parceiro),
+  executivos: () => dataset.executivos.map((e) => e.id_executivo),
+  gerentes: () => dataset.gerentes.map((g) => g.id_gerente),
+  pedidos: () => dataset.pedidos.map((p) => p.id_pedido),
+}
+
+// `pedidos` tem dezenas de milhares de linhas: só monta o índice se for usado.
+const cacheReferencia = new Map<Referencia, Set<string>>()
+
+function idsConhecidos(ref: Referencia): Set<string> {
+  const pronto = cacheReferencia.get(ref)
+  if (pronto) return pronto
+  const novo = new Set(FONTE_REFERENCIA[ref]())
+  cacheReferencia.set(ref, novo)
+  return novo
 }
 
 export function tabelaDoMapeamento(mapeamento: Record<string, string | null>): string | null {
@@ -1267,7 +1491,7 @@ export function validar(
               continue
             }
           }
-          if (alvo.referencia && !REFERENCIAS[alvo.referencia].has(valor.toUpperCase())) {
+          if (alvo.referencia && !idsConhecidos(alvo.referencia).has(valor.toUpperCase())) {
             anotar(indice, coluna, valor, `${alvo.campo} não existe no dataset atual.`)
             continue
           }

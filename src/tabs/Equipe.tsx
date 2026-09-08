@@ -1,23 +1,41 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Check, ChevronDown, KeyRound, RotateCcw, UserPlus, UserRound, X } from 'lucide-react'
+import * as Tooltip from '@radix-ui/react-tooltip'
+import {
+  Check,
+  ChevronDown,
+  KeyRound,
+  Layers,
+  RotateCcw,
+  Send,
+  UserPlus,
+  UserRound,
+  X,
+} from 'lucide-react'
+import { ConvidarMembro } from '@/components/ConvidarMembro'
 import { Coluna, DataTable } from '@/components/DataTable'
 import { Badge, BotaoPrimario, BotaoSecundario, Vazio, type Tom } from '@/components/ui'
 import { dataset } from '@/data/seed'
 import { cn } from '@/lib/format'
 import {
+  AREAS,
   emailDe,
   equipeInicial,
   listarPermissoes,
+  membroDeConvite,
   PAPEIS,
   PERMISSOES,
   PERMISSOES_PADRAO,
+  permissaoPorId,
+  resumoAcesso,
+  ROTULO_AREA,
   ROTULO_PAPEL,
+  type Area,
   type Membro,
   type Papel,
 } from '@/lib/equipe'
-import { nomeGerente, type Filtros } from '@/lib/queries'
+import { nomeGerente, PRACAS, type Filtros } from '@/lib/queries'
 
 const menuClasses =
   'z-50 min-w-[220px] max-h-[320px] overflow-y-auto rounded-lg border border-stroke bg-white p-1 shadow-[0_2px_8px_rgba(17,24,39,0.08)]'
@@ -228,6 +246,9 @@ function DialogAdicionar({
       nome: nome.trim(),
       email: email.trim(),
       papel,
+      // Quem entra por aqui não passa pela triagem de área do convite.
+      area: 'comercial',
+      funcao: ROTULO_PAPEL[papel],
       id_gerente: papel === 'executivo' ? idGerente : null,
       pracas: [],
       permissoes,
@@ -418,12 +439,66 @@ function DialogAdicionar({
   )
 }
 
+/**
+ * A contagem sozinha não responde "por que ela não vê o budget?" — o que a
+ * gestora procura é a lista do que falta, então é ela que abre no tooltip.
+ */
+function CelulaAcessos({ membro }: { membro: Membro }) {
+  const { pode, naoPode } = resumoAcesso(membro.permissoes)
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <span
+          tabIndex={0}
+          onClick={(e) => e.stopPropagation()}
+          className={cn(
+            'cursor-default rounded outline-none',
+            naoPode.length > 0 && 'underline decoration-dotted decoration-control underline-offset-4',
+          )}
+        >
+          {pode.length} de {PERMISSOES.length}
+        </span>
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content
+          side="left"
+          sideOffset={6}
+          className="z-50 max-w-[280px] rounded-md bg-ink px-2.5 py-2 text-left text-[12px] text-white"
+        >
+          {naoPode.length === 0 ? (
+            <span>Acesso total: {listarPermissoes(pode)}.</span>
+          ) : (
+            <>
+              <span className="block font-medium">Não pode</span>
+              <ul className="mt-1 space-y-0.5">
+                {naoPode.map((id) => (
+                  <li key={id} className="text-noite-texto">
+                    — {permissaoPorId(id)?.rotulo ?? id}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  )
+}
+
 export function Equipe({ filtros }: { filtros: Filtros }) {
   const [equipe, setEquipe] = useState<Membro[]>(() => equipeInicial())
   const [papelFiltro, setPapelFiltro] = useState<Papel | null>(null)
+  const [areaFiltro, setAreaFiltro] = useState<Area | null>(null)
   const [permissoesFiltro, setPermissoesFiltro] = useState<string[]>([])
   const [editando, setEditando] = useState<Membro | null>(null)
   const [adicionando, setAdicionando] = useState(false)
+  const [convidando, setConvidando] = useState(false)
+
+  const gerentes = useMemo(
+    () => dataset.gerentes.map((g) => ({ id: g.id_gerente, nome: g.nome, regiao: g.regiao })),
+    [],
+  )
 
   const noEscopoGlobal = useMemo(() => {
     return equipe.filter((m) => {
@@ -442,19 +517,27 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
   const linhas = useMemo(() => {
     return noEscopoGlobal.filter((m) => {
       if (papelFiltro !== null && m.papel !== papelFiltro) return false
+      if (areaFiltro !== null && m.area !== areaFiltro) return false
       return permissoesFiltro.every((p) => m.permissoes.includes(p))
     })
-  }, [noEscopoGlobal, papelFiltro, permissoesFiltro])
+  }, [noEscopoGlobal, papelFiltro, areaFiltro, permissoesFiltro])
 
   const ativos = linhas.filter((m) => m.ativo).length
-  const filtroDaAba = papelFiltro !== null || permissoesFiltro.length > 0
+  const pendentes = linhas.filter((m) => m.convite?.estado === 'pendente').length
+  const filtroDaAba = papelFiltro !== null || areaFiltro !== null || permissoesFiltro.length > 0
+
+  const limparFiltros = () => {
+    setPapelFiltro(null)
+    setAreaFiltro(null)
+    setPermissoesFiltro([])
+  }
   const filtroGlobal = filtros.gerentes.length > 0 || filtros.praca !== null
 
   const colunas: Coluna<Membro>[] = [
     {
       chave: 'membro',
       label: 'Membro',
-      larguraMin: '220px',
+      larguraMin: '200px',
       valor: (m) => m.nome,
       render: (m) => (
         <span className="block">
@@ -470,9 +553,23 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
       render: (m) => <Badge tom={TOM_PAPEL[m.papel]}>{ROTULO_PAPEL[m.papel]}</Badge>,
     },
     {
+      chave: 'area',
+      label: 'Área',
+      larguraMin: '100px',
+      valor: (m) => ROTULO_AREA[m.area],
+    },
+    {
+      chave: 'funcao',
+      label: 'Função',
+      larguraMin: '150px',
+      valor: (m) => m.funcao,
+      render: (m) =>
+        m.funcao.trim() === '' ? <span className="text-muted">— a definir</span> : m.funcao,
+    },
+    {
       chave: 'gerente',
       label: 'Gerente',
-      larguraMin: '150px',
+      larguraMin: '130px',
       valor: (m) => (m.id_gerente ? nomeGerente(m.id_gerente) : ''),
       render: (m) =>
         m.id_gerente ? (
@@ -484,7 +581,7 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
     {
       chave: 'pracas',
       label: 'Praças',
-      larguraMin: '180px',
+      larguraMin: '150px',
       valor: (m) => m.pracas.length,
       render: (m) =>
         m.pracas.length === 0 ? (
@@ -500,21 +597,24 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
     },
     {
       chave: 'permissoes',
-      label: 'Permissões',
+      label: 'Acessos',
       numerica: true,
       valor: (m) => m.permissoes.length,
-      render: (m) => (
-        <span title={listarPermissoes(m.permissoes)}>
-          {m.permissoes.length} de {PERMISSOES.length}
-        </span>
-      ),
+      render: (m) => <CelulaAcessos membro={m} />,
     },
     {
       chave: 'status',
       label: 'Status',
-      valor: (m) => m.ativo,
+      larguraMin: '130px',
+      valor: (m) => (m.convite?.estado === 'pendente' ? 2 : m.ativo ? 1 : 0),
       render: (m) =>
-        m.ativo ? <Badge tom="verde">Ativo</Badge> : <Badge tom="cinza">Inativo</Badge>,
+        m.convite?.estado === 'pendente' ? (
+          <Badge tom="rosa">Convite pendente</Badge>
+        ) : m.ativo ? (
+          <Badge tom="verde">Ativo</Badge>
+        ) : (
+          <Badge tom="cinza">Inativo</Badge>
+        ),
     },
   ]
 
@@ -523,13 +623,22 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
       <div className="mb-3 flex items-end justify-between gap-4">
         <p className="text-[13px] text-muted">
           {linhas.length === equipe.length
-            ? `${equipe.length} membros no time · ${ativos} ativos.`
-            : `${linhas.length} de ${equipe.length} membros no recorte · ${ativos} ativos.`}
+            ? `${equipe.length} membros no time · ${ativos} ${ativos === 1 ? 'ativo' : 'ativos'}`
+            : `${linhas.length} de ${equipe.length} membros no recorte · ${ativos} ${
+                ativos === 1 ? 'ativo' : 'ativos'
+              }`}
+          {pendentes > 0 ? ` · ${pendentes} com convite pendente.` : '.'}
         </p>
-        <BotaoPrimario onClick={() => setAdicionando(true)}>
-          <UserPlus className="h-3.5 w-3.5" strokeWidth={2} />
-          Adicionar membro
-        </BotaoPrimario>
+        <div className="flex items-center gap-2">
+          <BotaoSecundario onClick={() => setConvidando(true)}>
+            <Send className="h-3.5 w-3.5" strokeWidth={2} />
+            Convidar membro
+          </BotaoSecundario>
+          <BotaoPrimario onClick={() => setAdicionando(true)}>
+            <UserPlus className="h-3.5 w-3.5" strokeWidth={2} />
+            Adicionar membro
+          </BotaoPrimario>
+        </div>
       </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -556,6 +665,35 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
                 >
                   {ROTULO_PAPEL[p]}
                   {papelFiltro === p && <Check className="h-3.5 w-3.5 text-rosa" />}
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger className="chip">
+            <ChipConteudo
+              icone={Layers}
+              label="Área"
+              valor={areaFiltro === null ? 'Todas' : ROTULO_AREA[areaFiltro]}
+              ativo={areaFiltro !== null}
+            />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content align="start" sideOffset={6} className={menuClasses}>
+              <DropdownMenu.Item className={itemClasses} onSelect={() => setAreaFiltro(null)}>
+                Todas
+                {areaFiltro === null && <Check className="h-3.5 w-3.5 text-rosa" />}
+              </DropdownMenu.Item>
+              {AREAS.map((a) => (
+                <DropdownMenu.Item
+                  key={a}
+                  className={itemClasses}
+                  onSelect={() => setAreaFiltro(a)}
+                >
+                  {ROTULO_AREA[a]}
+                  {areaFiltro === a && <Check className="h-3.5 w-3.5 text-rosa" />}
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.Content>
@@ -614,14 +752,7 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
         </DropdownMenu.Root>
 
         {filtroDaAba && (
-          <button
-            type="button"
-            onClick={() => {
-              setPapelFiltro(null)
-              setPermissoesFiltro([])
-            }}
-            className="chip text-muted"
-          >
+          <button type="button" onClick={limparFiltros} className="chip text-muted">
             <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} />
             Limpar filtros da aba
           </button>
@@ -634,21 +765,14 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
             titulo="Nenhum membro com esse recorte"
             dica={
               filtroDaAba
-                ? 'Afrouxe o filtro de papel ou tire uma permissão da lista — quanto mais permissões marcadas, menos gente sobra.'
+                ? 'Afrouxe o filtro de papel ou de área, ou tire uma permissão da lista — quanto mais permissões marcadas, menos gente sobra.'
                 : filtroGlobal
                   ? 'O filtro de gerente ou de praça no topo da página está deixando o time de fora. Limpe o filtro global para ver todo mundo.'
                   : 'O time está vazio. Use "Adicionar membro" para começar.'
             }
             acao={
               filtroDaAba ? (
-                <BotaoSecundario
-                  onClick={() => {
-                    setPapelFiltro(null)
-                    setPermissoesFiltro([])
-                  }}
-                >
-                  Limpar filtros da aba
-                </BotaoSecundario>
+                <BotaoSecundario onClick={limparFiltros}>Limpar filtros da aba</BotaoSecundario>
               ) : (
                 <BotaoPrimario onClick={() => setAdicionando(true)}>Adicionar membro</BotaoPrimario>
               )
@@ -656,21 +780,24 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
           />
         </div>
       ) : (
-        <DataTable
-          colunas={colunas}
-          linhas={linhas}
-          chaveDe={(m) => m.id}
-          ordemInicial={{ chave: 'membro', asc: true }}
-          busca={{
-            placeholder: 'Buscar por nome, e-mail ou praça',
-            campos: (m) => `${m.nome} ${m.email} ${ROTULO_PAPEL[m.papel]} ${m.pracas.join(' ')}`,
-          }}
-          onLinhaClick={(m) => setEditando(m)}
-          vazio={{
-            titulo: 'Nenhum membro com esse termo',
-            dica: 'A busca procura por nome, e-mail, papel e praça. Apague o termo para ver a lista inteira.',
-          }}
-        />
+        <Tooltip.Provider delayDuration={150}>
+          <DataTable
+            colunas={colunas}
+            linhas={linhas}
+            chaveDe={(m) => m.id}
+            ordemInicial={{ chave: 'membro', asc: true }}
+            busca={{
+              placeholder: 'Buscar por nome, e-mail, função ou praça',
+              campos: (m) =>
+                `${m.nome} ${m.email} ${ROTULO_PAPEL[m.papel]} ${ROTULO_AREA[m.area]} ${m.funcao} ${m.pracas.join(' ')}`,
+            }}
+            onLinhaClick={(m) => setEditando(m)}
+            vazio={{
+              titulo: 'Nenhum membro com esse termo',
+              dica: 'A busca procura por nome, e-mail, papel, área, função e praça. Apague o termo para ver a lista inteira.',
+            }}
+          />
+        </Tooltip.Provider>
       )}
 
       {editando && (
@@ -691,6 +818,15 @@ export function Equipe({ filtros }: { filtros: Filtros }) {
         onAdicionar={(novo) =>
           setEquipe((atual) => [...atual, { ...novo, id: `M${atual.length + 1}-${Date.now()}` }])
         }
+      />
+
+      <ConvidarMembro
+        aberto={convidando}
+        onFechar={() => setConvidando(false)}
+        onConvidar={(convite) => setEquipe((atual) => [...atual, membroDeConvite(convite)])}
+        gerentes={gerentes}
+        pracas={PRACAS}
+        membros={equipe}
       />
     </div>
   )
