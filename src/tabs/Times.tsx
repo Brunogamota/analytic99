@@ -946,7 +946,7 @@ export function Times({ atual }: { atual: Snapshot }) {
                               tickFormatter={nomeCurto}
                             />
                             <ChartTooltip
-                              cursor={{ fill: '#F5F5F5' }}
+                              cursor={{ fill: 'rgb(var(--hairline))' }}
                               content={<ChartTooltipContent formatarValor={(v) => fmtInt(v)} />}
                             />
                             <Bar
@@ -959,7 +959,7 @@ export function Times({ atual }: { atual: Snapshot }) {
                               {ordenadas.map((l) => (
                                 <Cell
                                   key={l.membro.id}
-                                  fill={l.ativos > 0 ? '#E31C79' : '#737373'}
+                                  fill={l.ativos > 0 ? 'rgb(var(--rosa))' : 'rgb(var(--muted))'}
                                 />
                               ))}
                             </Bar>

@@ -197,8 +197,8 @@ function Donut({ nota }: { nota: Nota }) {
             stroke="none"
             isAnimationActive={false}
           >
-            <Cell fill={nota.valor === null ? '#F5F5F5' : faixa.cor} />
-            <Cell fill="#F5F5F5" />
+            <Cell fill={nota.valor === null ? 'rgb(var(--hairline))' : faixa.cor} />
+            <Cell fill="rgb(var(--hairline))" />
           </Pie>
         </PieChart>
       </ChartContainer>
@@ -557,7 +557,7 @@ export function Performance({
                       tickFormatter={(v: number) => fmtInt(v)}
                     />
                     <ChartTooltip
-                      cursor={{ stroke: '#E7E7E7', strokeWidth: 1 }}
+                      cursor={{ stroke: 'rgb(var(--stroke))', strokeWidth: 1 }}
                       content={<ChartTooltipContent formatarValor={(v) => fmtInt(v)} />}
                     />
                     <ChartLegend content={<ChartLegendContent />} />

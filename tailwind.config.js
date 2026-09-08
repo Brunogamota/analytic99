@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+
+/** Token que troca de valor entre os temas — o valor mora no index.css. */
+const v = (nome) => `rgb(var(--${nome}) / <alpha-value>)`
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -8,27 +13,35 @@ export default {
         serif: ['Instrument Serif', 'ui-serif', 'Georgia', 'Times New Roman', 'serif'],
       },
       /**
-       * Rosa, branco e preto. A estrutura é a do iFood — uma cor de marca só,
-       * sobre branco e preto, com neutros puros. O rosa aqui é o da equipe.
+       * Rosa, branco e preto, na estrutura do iFood: uma cor de marca só, sobre
+       * neutros puros. Todo token vem de CSS variable, então o tema escuro
+       * troca os valores sem que nenhum componente saiba disso.
        *
-       * Os nomes semânticos continuam existindo para não quebrar chamadas, mas
-       * apontam todos para a mesma família: o que precisa de ação sai em rosa,
-       * o que está bem fica em preto ou cinza. Cor só onde há decisão.
+       * Os nomes semânticos apontam todos para a mesma família: o que precisa
+       * de ação sai em rosa, o que está bem fica no neutro do texto. Cor só
+       * onde há decisão.
        */
       colors: {
-        rosa: { DEFAULT: '#E31C79', escuro: '#A8125A', claro: '#F286B7', fundo: '#FDEAF2' },
-        // Alerta forte e atenção leve: dois pesos do mesmo rosa.
-        laranja: { DEFAULT: '#E31C79', escuro: '#A8125A', fundo: '#FDEAF2' },
-        amarelo: { DEFAULT: '#F286B7', claro: '#F9C4DC', fundo: '#FDF3F8' },
-        // "Positivo" não ganha cor própria: fica no preto do texto.
-        verde: { DEFAULT: '#111111', fundo: '#F5F5F5' },
-        ink: '#111111',
-        muted: '#737373',
-        hairline: '#F5F5F5',
-        stroke: '#E7E7E7',
-        control: '#D4D4D4',
-        areia: { DEFAULT: '#FFFFFF', barra: '#FAFAFA', ativo: '#F0F0F0' },
-        noite: { DEFAULT: '#111111', claro: '#2A2A2A', texto: '#A3A3A3' },
+        rosa: {
+          DEFAULT: v('rosa'),
+          escuro: v('rosa-escuro'),
+          claro: v('rosa-claro'),
+          fundo: v('rosa-fundo'),
+        },
+        laranja: { DEFAULT: v('rosa'), escuro: v('rosa-escuro'), fundo: v('rosa-fundo') },
+        amarelo: { DEFAULT: v('rosa-claro'), claro: v('rosa-claro'), fundo: v('rosa-fundo') },
+        verde: { DEFAULT: v('ink'), fundo: v('hairline') },
+        ink: v('ink'),
+        muted: v('muted'),
+        hairline: v('hairline'),
+        stroke: v('stroke'),
+        control: v('control'),
+        /** Superfície de card, diálogo e menu — branca no claro, grafite no escuro. */
+        superficie: v('superficie'),
+        /** Texto que fica sobre `bg-ink`: inverte junto com ele. */
+        'sobre-ink': v('sobre-ink'),
+        areia: { DEFAULT: v('areia'), barra: v('areia-barra'), ativo: v('areia-ativo') },
+        noite: { DEFAULT: v('ink'), claro: v('noite-claro'), texto: v('muted') },
       },
       fontSize: {
         micro: ['11px', '16px'],

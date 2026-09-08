@@ -3,12 +3,12 @@ import { cn } from '@/lib/format'
 
 /** Cores de fundo do monograma, na paleta da marca. */
 const FUNDOS = [
-  { bg: '#E31C79', texto: '#FFFFFF' },
-  { bg: '#111111', texto: '#FFFFFF' },
-  { bg: '#F286B7', texto: '#111111' },
-  { bg: '#E31C79', texto: '#FFFFFF' },
-  { bg: '#111111', texto: '#FFFFFF' },
-  { bg: '#737373', texto: '#FFFFFF' },
+  { bg: 'rgb(var(--rosa))', texto: '#FFFFFF' },
+  { bg: 'rgb(var(--ink))', texto: 'rgb(var(--sobre-ink))' },
+  { bg: 'rgb(var(--rosa-claro))', texto: 'rgb(var(--ink))' },
+  { bg: 'rgb(var(--rosa))', texto: '#FFFFFF' },
+  { bg: 'rgb(var(--ink))', texto: 'rgb(var(--sobre-ink))' },
+  { bg: 'rgb(var(--muted))', texto: '#FFFFFF' },
 ] as const
 
 /** Hash estável do nome: a mesma pessoa mantém a mesma cor entre telas. */

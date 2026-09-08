@@ -7,6 +7,7 @@ import { PERIODO_PADRAO, periodoAnterior, rotuloPeriodo } from '@/lib/periodo'
 import { snapshotsDoFiltro, type Filtros } from '@/lib/queries'
 import { filtrosDoPerfil, PERFIL_GESTORA, type PerfilAtivo } from '@/lib/perfil'
 import { SeletorPerfil } from '@/components/SeletorPerfil'
+import { ToggleTema } from '@/components/ToggleTema'
 import { Equipe } from '@/tabs/Equipe'
 import { Gerencial } from '@/tabs/Gerencial'
 import { Importar } from '@/tabs/Importar'
@@ -69,13 +70,16 @@ export default function App() {
       <SidebarInset>
         <div className="flex items-center justify-between px-8 pt-4">
           <SidebarTrigger />
-          <SeletorPerfil
+          <div className="flex items-center gap-2">
+            <ToggleTema />
+            <SeletorPerfil
             perfil={perfil}
             onTrocar={(p) => {
               setPerfil(p)
               setAba(p.tipo === 'executivo' ? 'minha_visao' : 'gerencial')
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
         <div className="px-8 pb-6 pt-2">
           <PageHeader

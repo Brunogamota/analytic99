@@ -14,10 +14,10 @@ export type StatusTarefa = {
 }
 
 export const STATUS: Record<'planejada' | 'andamento' | 'concluida' | 'atrasada', StatusTarefa> = {
-  planejada: { id: 'planejada', nome: 'Planejada', cor: '#737373' },
-  andamento: { id: 'andamento', nome: 'Em andamento', cor: '#F286B7' },
-  concluida: { id: 'concluida', nome: 'Concluída', cor: '#111111' },
-  atrasada: { id: 'atrasada', nome: 'Atrasada', cor: '#E31C79' },
+  planejada: { id: 'planejada', nome: 'Planejada', cor: 'rgb(var(--muted))' },
+  andamento: { id: 'andamento', nome: 'Em andamento', cor: 'rgb(var(--rosa-claro))' },
+  concluida: { id: 'concluida', nome: 'Concluída', cor: 'rgb(var(--ink))' },
+  atrasada: { id: 'atrasada', nome: 'Atrasada', cor: 'rgb(var(--rosa))' },
 }
 
 export type Prioridade = 'urgente' | 'alta' | 'normal' | 'baixa'
@@ -33,10 +33,10 @@ export interface NivelPrioridade {
  * em preto ou cinza. A ordem do objeto é a ordem que o menu mostra.
  */
 export const PRIORIDADES: Record<Prioridade, NivelPrioridade> = {
-  urgente: { id: 'urgente', nome: 'Urgente', cor: '#E31C79' },
-  alta: { id: 'alta', nome: 'Alta', cor: '#F286B7' },
-  normal: { id: 'normal', nome: 'Normal', cor: '#111111' },
-  baixa: { id: 'baixa', nome: 'Baixa', cor: '#737373' },
+  urgente: { id: 'urgente', nome: 'Urgente', cor: 'rgb(var(--rosa))' },
+  alta: { id: 'alta', nome: 'Alta', cor: 'rgb(var(--rosa-claro))' },
+  normal: { id: 'normal', nome: 'Normal', cor: 'rgb(var(--ink))' },
+  baixa: { id: 'baixa', nome: 'Baixa', cor: 'rgb(var(--muted))' },
 }
 
 export const LISTA_PRIORIDADES: NivelPrioridade[] = Object.values(PRIORIDADES)

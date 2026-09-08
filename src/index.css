@@ -3,6 +3,53 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --rosa: 227 28 121;
+    --rosa-escuro: 168 18 90;
+    --rosa-claro: 242 134 183;
+    --rosa-fundo: 253 234 242;
+
+    --ink: 17 17 17;
+    --sobre-ink: 255 255 255;
+    --muted: 115 115 115;
+    --hairline: 245 245 245;
+    --stroke: 231 231 231;
+    --control: 212 212 212;
+
+    --superficie: 255 255 255;
+    --areia: 255 255 255;
+    --areia-barra: 250 250 250;
+    --areia-ativo: 240 240 240;
+    --noite-claro: 42 42 42;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    /* O rosa da marca é escuro demais sobre preto: sobre #0F0F0F ele fica em
+       4,4:1, no limite para texto pequeno. Clareia para manter a mesma cor
+       reconhecível com contraste de leitura. */
+    --rosa: 255 77 157;
+    --rosa-escuro: 255 168 206;
+    --rosa-claro: 255 122 180;
+    --rosa-fundo: 58 16 36;
+
+    --ink: 245 245 245;
+    --sobre-ink: 17 17 17;
+    --muted: 163 163 163;
+    --hairline: 32 32 32;
+    --stroke: 44 44 44;
+    --control: 61 61 61;
+
+    --superficie: 23 23 23;
+    --areia: 15 15 15;
+    --areia-barra: 19 19 19;
+    --areia-ativo: 35 35 35;
+    --noite-claro: 224 224 224;
+
+    color-scheme: dark;
+  }
+
   html,
   body,
   #root {
@@ -22,9 +69,9 @@
     @apply text-micro font-semibold uppercase tracking-[0.06em] text-muted;
   }
 
-  /* Chip pill do Manus: borda fina, sem preenchimento, alvo de clique alto. */
+  /* Chip pill: borda fina, sem preenchimento, alvo de clique alto. */
   .chip {
-    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-stroke bg-white px-3.5 text-[13px] text-ink outline-none transition-colors;
+    @apply inline-flex h-9 items-center gap-1.5 rounded-full border border-stroke bg-superficie px-3.5 text-[13px] text-ink outline-none transition-colors;
   }
 
   .chip:hover {
@@ -37,10 +84,36 @@
   }
 
   .card {
-    @apply rounded-card border border-stroke bg-white;
+    @apply rounded-card border border-stroke bg-superficie;
   }
 
   .num {
     @apply text-right tabular-nums;
+  }
+}
+
+@layer utilities {
+  /*
+   * As telas usam `bg-white` e `text-white` em ~67 pontos, escritos antes de o
+   * tema escuro existir. Redefini-los aqui troca o tema inteiro sem varrer os
+   * arquivos um a um; a substituição por token fica para uma passada própria.
+   */
+  .dark .bg-white {
+    background-color: rgb(var(--superficie));
+  }
+
+  .dark .text-white {
+    color: rgb(var(--sobre-ink));
+  }
+
+  .dark .ring-white {
+    --tw-ring-color: rgb(var(--superficie));
+  }
+
+  /* Campos nativos (date, file) precisam do esquema para não vir branco. */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    color-scheme: dark;
   }
 }

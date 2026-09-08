@@ -9,6 +9,9 @@ import type { Filtros, Snapshot } from './queries'
  */
 export type Papel = 'gestora' | Extract<PapelEquipe, 'executivo'>
 
+/** Quem usa o dashboard. */
+export const NOME_GESTORA = 'Carolina Martinovic'
+
 export interface PerfilGestora {
   tipo: 'gestora'
 }
@@ -24,7 +27,7 @@ export type PerfilAtivo = PerfilGestora | PerfilExecutivo
 export const PERFIL_GESTORA: PerfilAtivo = { tipo: 'gestora' }
 
 export const ROTULO_PERFIL = (p: PerfilAtivo): string =>
-  p.tipo === 'gestora' ? 'Gestora' : p.nome
+  p.tipo === 'gestora' ? NOME_GESTORA : p.nome
 
 export function perfisDisponiveis(): PerfilAtivo[] {
   return [

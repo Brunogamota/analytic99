@@ -128,12 +128,12 @@ export function Sidebar({ ativa, onChange }: { ativa: AbaId; onChange: (id: AbaI
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenuButton size="lg" tooltip="Marina Prado" className="gap-2.5">
-          <Avatar nome="Marina Prado" tamanho="md" status="online" />
+        <SidebarMenuButton size="lg" tooltip="Carolina Martinovic" className="gap-2.5">
+          <Avatar nome="Carolina Martinovic" tamanho="md" status="online" />
           {!recolhida && (
             <>
               <span className="flex min-w-0 flex-1 flex-col items-start">
-                <span className="truncate text-[13px] font-semibold text-ink">Marina Prado</span>
+                <span className="truncate text-[13px] font-semibold text-ink">Carolina Martinovic</span>
                 <span className="truncate text-[12px] text-muted">Gestora comercial</span>
               </span>
               <ChevronsUpDown className="text-muted" strokeWidth={1.75} />

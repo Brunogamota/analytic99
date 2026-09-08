@@ -849,7 +849,10 @@ function Perdas({ atual }: { atual: Snapshot }) {
     { titulo: 'Ocorrências por 100 pedidos', valor: (l) => l.taxa_por_100 },
     { titulo: 'Valor', valor: (l) => l.valor },
     { titulo: 'Valor ressarcido', valor: (l) => l.valor_ressarcido },
-    { titulo: '% da receita comprometida', valor: (l) => l.pct_receita },
+    {
+      titulo: '% da receita comprometida',
+      valor: (l) => (l.pct_receita === null ? null : l.pct_receita * 100),
+    },
     {
       titulo: 'Motivo predominante',
       valor: (l) => (l.motivo_predominante === null ? null : rotuloMotivo(l.motivo_predominante)),
@@ -978,7 +981,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
                 tickFormatter={valorCurto}
               />
               <ChartTooltip
-                cursor={{ stroke: '#E7E7E7', strokeWidth: 1 }}
+                cursor={{ stroke: 'rgb(var(--stroke))', strokeWidth: 1 }}
                 content={
                   <ChartTooltipContent
                     formatarValor={(v, nome) =>
@@ -1050,7 +1053,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
                   tickMargin={6}
                 />
                 <ChartTooltip
-                  cursor={{ fill: '#F5F5F5' }}
+                  cursor={{ fill: 'rgb(var(--hairline))' }}
                   content={<ChartTooltipContent formatarValor={(v) => fmtInt(v)} />}
                 />
                 <Bar
@@ -1064,7 +1067,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
                     dataKey="valor"
                     position="right"
                     offset={8}
-                    fill="#737373"
+                    fill="rgb(var(--muted))"
                     fontSize={11}
                     formatter={(v) => (typeof v === 'number' ? fmtMoeda(v) : '')}
                   />

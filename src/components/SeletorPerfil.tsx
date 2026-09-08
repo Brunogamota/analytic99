@@ -7,6 +7,7 @@ import {
   PERFIL_GESTORA,
   perfisDisponiveis,
   ROTULO_PERFIL,
+  NOME_GESTORA,
   type PerfilAtivo,
 } from '@/lib/perfil'
 
@@ -47,7 +48,7 @@ export function SeletorPerfil({
               onSelect={() => onTrocar(PERFIL_GESTORA)}
             >
               <Avatar nome="Gestora" tamanho="sm" anel={false} />
-              <span className="min-w-0 flex-1">Gestora (visão do time)</span>
+              <span className="min-w-0 flex-1">{NOME_GESTORA} (visão do time)</span>
               {ativa === 'gestora' && <Check className="h-3.5 w-3.5 shrink-0 text-rosa" />}
             </DropdownMenu.Item>
 

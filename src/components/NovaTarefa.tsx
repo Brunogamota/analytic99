@@ -269,7 +269,7 @@ function Formulario({
                 <Flag
                   className="h-3.5 w-3.5"
                   strokeWidth={1.75}
-                  style={{ color: nivel?.cor ?? '#737373' }}
+                  style={{ color: nivel?.cor ?? 'rgb(var(--muted))' }}
                 />
               }
               rotulo="Prioridade"

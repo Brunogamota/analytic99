@@ -797,7 +797,7 @@ export function GanttMarker({
   id,
   label,
   date,
-  cor = '#737373',
+  cor = 'rgb(var(--muted))',
   onRemove,
   className,
 }: {
@@ -856,7 +856,7 @@ export function GanttToday({ date, className }: { date?: Date; className?: strin
     <GanttMarker
       label="Hoje"
       date={hoje}
-      cor="#E31C79"
+      cor="rgb(var(--rosa))"
       // Sem trocar o fundo: o `bg-white` da pílula base venceria por ordem de CSS.
       className={cn('border-laranja font-medium text-laranja-escuro', className)}
     />
