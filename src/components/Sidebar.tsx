@@ -8,6 +8,7 @@ import {
   Lightbulb,
   Sparkles,
   Tag,
+  TrendingUp,
   Upload,
   UserRound,
   Users,
@@ -33,6 +34,7 @@ export type AbaId =
   | 'gerencial'
   | 'sugestoes'
   | 'relatorios'
+  | 'performance'
   | 'smart'
   | 'banner'
   | 'special'
@@ -49,6 +51,7 @@ const SECOES: { titulo: string; itens: { id: AbaId; label: string; icone: typeof
     itens: [
       { id: 'gerencial', label: 'Gerencial', icone: LayoutDashboard },
       { id: 'sugestoes', label: 'Sugestões', icone: Lightbulb },
+      { id: 'performance', label: 'Performance', icone: TrendingUp },
       { id: 'relatorios', label: 'Relatórios', icone: FileText },
     ],
   },

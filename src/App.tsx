@@ -21,6 +21,7 @@ const Relatorios = lazy(() => import('@/tabs/Relatorios').then((m) => ({ default
 const Gerencial = lazy(() => import('@/tabs/Gerencial').then((m) => ({ default: m.Gerencial })))
 const Times = lazy(() => import('@/tabs/Times').then((m) => ({ default: m.Times })))
 const MinhaVisao = lazy(() => import('@/tabs/MinhaVisao').then((m) => ({ default: m.MinhaVisao })))
+const Performance = lazy(() => import('@/tabs/Performance').then((m) => ({ default: m.Performance })))
 const FILTROS_PADRAO: Filtros = {
   periodo: PERIODO_PADRAO,
   gerentes: [],
@@ -32,6 +33,7 @@ const TITULOS: Record<AbaId, string> = {
   gerencial: 'Performance do time',
   sugestoes: 'Sugestões',
   relatorios: 'Relatórios',
+  performance: 'Performance',
   smart: 'Promo Smart',
   banner: 'Promo Banner',
   special: 'Promo Special',
@@ -125,6 +127,9 @@ export default function App() {
               <Gerencial atual={atual} anterior={anterior} comparacao={comparacao} />
             )}
             {aba === 'sugestoes' && <Sugestoes atual={atual} anterior={anterior} />}
+            {aba === 'performance' && (
+              <Performance atual={atual} anterior={anterior} comparacao={comparacao} />
+            )}
             {aba === 'relatorios' && (
               <Relatorios atual={atual} anterior={anterior} comparacao={comparacao} />
             )}
