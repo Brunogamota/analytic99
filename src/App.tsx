@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { FilterBar } from '@/components/FilterBar'
 import { PageHeader, type View } from '@/components/PageHeader'
 import { Sidebar, type AbaId } from '@/components/Sidebar'
@@ -9,18 +9,18 @@ import { filtrosDoPerfil, PERFIL_GESTORA, type PerfilAtivo } from '@/lib/perfil'
 import { SeletorPerfil } from '@/components/SeletorPerfil'
 import { ToggleTema } from '@/components/ToggleTema'
 import { Equipe } from '@/tabs/Equipe'
-import { Gerencial } from '@/tabs/Gerencial'
-import { Importar } from '@/tabs/Importar'
 import { Integracoes } from '@/tabs/Integracoes'
-import { MinhaVisao } from '@/tabs/MinhaVisao'
 import { PromoBanner } from '@/tabs/PromoBanner'
 import { PromoSmart } from '@/tabs/PromoSmart'
 import { PromoSpecial } from '@/tabs/PromoSpecial'
-import { Relatorios } from '@/tabs/Relatorios'
 import { Sugestoes } from '@/tabs/Sugestoes'
-import { Tarefas } from '@/tabs/Tarefas'
-import { Times } from '@/tabs/Times'
 
+const Importar = lazy(() => import('@/tabs/Importar').then((m) => ({ default: m.Importar })))
+const Tarefas = lazy(() => import('@/tabs/Tarefas').then((m) => ({ default: m.Tarefas })))
+const Relatorios = lazy(() => import('@/tabs/Relatorios').then((m) => ({ default: m.Relatorios })))
+const Gerencial = lazy(() => import('@/tabs/Gerencial').then((m) => ({ default: m.Gerencial })))
+const Times = lazy(() => import('@/tabs/Times').then((m) => ({ default: m.Times })))
+const MinhaVisao = lazy(() => import('@/tabs/MinhaVisao').then((m) => ({ default: m.MinhaVisao })))
 const FILTROS_PADRAO: Filtros = {
   periodo: PERIODO_PADRAO,
   gerentes: [],
@@ -120,6 +120,7 @@ export default function App() {
           </div>
 
           <div className="mt-6 pb-10">
+            <Suspense fallback={<p className="py-16 text-center text-[13px] text-muted">Carregando…</p>}>
             {aba === 'gerencial' && (
               <Gerencial atual={atual} anterior={anterior} comparacao={comparacao} />
             )}
@@ -138,6 +139,7 @@ export default function App() {
             {aba === 'minha_visao' && (
               <MinhaVisao atual={atual} anterior={anterior} perfil={perfil} />
             )}
+            </Suspense>
           </div>
         </div>
       </SidebarInset>

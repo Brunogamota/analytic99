@@ -295,7 +295,7 @@ export function GanttProvider({
         onScroll={aoRolar}
         style={vars}
         className={cn(
-          'relative grid h-full w-full flex-none select-none overflow-auto bg-areia',
+          'relative grid h-full w-full flex-none select-none overflow-auto bg-areia-barra',
           className,
         )}
       >
@@ -321,7 +321,7 @@ export function GanttContentHeader({
   const id = useId()
   return (
     <div
-      className="sticky top-0 z-20 flex w-full shrink-0 flex-col bg-areia/95 backdrop-blur"
+      className="sticky top-0 z-20 flex w-full shrink-0 flex-col bg-areia-barra/95 backdrop-blur"
       style={{ height: 'var(--gantt-header-height)' }}
     >
       <div className="flex flex-1 items-center">
@@ -377,7 +377,7 @@ export function GanttColumns({
               type="button"
               aria-label="Adicionar tarefa"
               onClick={() => gantt.onAddItem?.(dataDaColuna(indice))}
-              className="absolute left-1/2 top-1 hidden h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border border-stroke bg-white text-muted group-hover:flex"
+              className="absolute left-1/2 top-1 hidden h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border border-stroke bg-superficie text-muted group-hover:flex"
             >
               <Plus size={12} />
             </button>
@@ -498,12 +498,12 @@ export function GanttSidebar({ className, children }: { className?: string; chil
   return (
     <div
       className={cn(
-        'sticky left-0 z-30 h-max min-h-full border-r border-stroke bg-white/95 backdrop-blur',
+        'sticky left-0 z-30 h-max min-h-full border-r border-stroke bg-superficie/95 backdrop-blur',
         className,
       )}
     >
       <div
-        className="sticky top-0 z-10 flex shrink-0 items-end justify-between gap-2.5 border-b border-stroke bg-white/95 p-2.5 backdrop-blur"
+        className="sticky top-0 z-10 flex shrink-0 items-end justify-between gap-2.5 border-b border-stroke bg-superficie/95 p-2.5 backdrop-blur"
         style={{ height: 'var(--gantt-header-height)' }}
       >
         <p className="label-track flex-1 truncate text-left">Tarefa</p>
@@ -728,7 +728,7 @@ export function GanttFeatureItem({
             o dnd-kit remedir o nó e descontar o próprio movimento do delta. */}
         {arrastando && (
           <div
-            className="pointer-events-none absolute top-1 flex items-center justify-center rounded-md border border-dashed border-control bg-white/70 text-[11px] text-muted"
+            className="pointer-events-none absolute top-1 flex items-center justify-center rounded-md border border-dashed border-control bg-superficie/70 text-[11px] text-muted"
             style={{
               left: offsetDaData(previaInicio, gantt),
               width: larguraDaBarra(previaInicio, previaFim, gantt),
@@ -772,7 +772,7 @@ function BarraArrastavel({
           </div>
         </ContextMenu.Trigger>
         <ContextMenu.Portal>
-          <ContextMenu.Content className="z-50 min-w-[180px] rounded-card border border-stroke bg-white p-1 text-[13px] text-ink shadow-sm">
+          <ContextMenu.Content className="z-50 min-w-[180px] rounded-card border border-stroke bg-superficie p-1 text-[13px] text-ink shadow-sm">
             <ContextMenu.Item
               disabled={!onRemove}
               onSelect={() => onRemove?.(feature.id)}
@@ -820,20 +820,20 @@ export function GanttMarker({
         <ContextMenu.Trigger asChild>
           <div
             className={cn(
-              'group pointer-events-auto sticky top-0 z-20 flex flex-col items-center whitespace-nowrap rounded-b-md border border-t-0 border-stroke bg-white px-2 py-1 text-[11px] text-ink',
+              'group pointer-events-auto sticky top-0 z-20 flex flex-col items-center whitespace-nowrap rounded-b-md border border-t-0 border-stroke bg-superficie px-2 py-1 text-[11px] text-ink',
               className,
             )}
           >
             {label}
             {/* Absoluto de propósito: a data não pode alargar a pílula e cobrir
                 os marcadores vizinhos. */}
-            <span className="pointer-events-none absolute left-1/2 top-full hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-stroke bg-white px-1.5 py-0.5 text-[11px] font-normal text-muted group-hover:block">
+            <span className="pointer-events-none absolute left-1/2 top-full hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-stroke bg-superficie px-1.5 py-0.5 text-[11px] font-normal text-muted group-hover:block">
               {format(date, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
             </span>
           </div>
         </ContextMenu.Trigger>
         <ContextMenu.Portal>
-          <ContextMenu.Content className="z-50 min-w-[180px] rounded-card border border-stroke bg-white p-1 text-[13px] text-ink shadow-sm">
+          <ContextMenu.Content className="z-50 min-w-[180px] rounded-card border border-stroke bg-superficie p-1 text-[13px] text-ink shadow-sm">
             <ContextMenu.Item
               disabled={!onRemove || !id}
               onSelect={() => (id ? onRemove?.(id) : undefined)}
@@ -857,7 +857,7 @@ export function GanttToday({ date, className }: { date?: Date; className?: strin
       label="Hoje"
       date={hoje}
       cor="rgb(var(--rosa))"
-      // Sem trocar o fundo: o `bg-white` da pílula base venceria por ordem de CSS.
+      // Sem trocar o fundo: o `bg-superficie` da pílula base venceria por ordem de CSS.
       className={cn('border-laranja font-medium text-laranja-escuro', className)}
     />
   )
@@ -897,7 +897,7 @@ export function GanttCreateMarkerTrigger({
             type="button"
             title={`Criar marcador em ${format(data, "d 'de' MMM", { locale: ptBR })}`}
             onClick={() => onCreateMarker(data)}
-            className="pointer-events-auto sticky top-0 z-30 inline-flex h-5 w-5 items-center justify-center rounded-full border border-stroke bg-white text-muted"
+            className="pointer-events-auto sticky top-0 z-30 inline-flex h-5 w-5 items-center justify-center rounded-full border border-stroke bg-superficie text-muted"
           >
             <Plus size={12} />
           </button>
