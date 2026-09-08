@@ -6,6 +6,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   XAxis,
   YAxis,
 } from 'recharts'
@@ -1016,7 +1017,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
       <div className="grid grid-cols-2 gap-4">
         <Cartao
           titulo="Ocorrências por motivo"
-          subtitulo="O que gera o problema, em contagem. O valor de cada motivo está na lista abaixo."
+          subtitulo="Contagem na barra, valor envolvido ao lado dela."
         >
           {motivos.length === 0 ? (
             <SemDados mensagem="Nenhuma ocorrência no recorte." altura={320} />
@@ -1029,7 +1030,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
               <BarChart
                 data={motivos}
                 layout="vertical"
-                margin={{ top: 4, right: 20, bottom: 0, left: 0 }}
+                margin={{ top: 4, right: 78, bottom: 0, left: 0 }}
               >
                 <CartesianGrid horizontal={false} />
                 <XAxis
@@ -1045,7 +1046,7 @@ function Perdas({ atual }: { atual: Snapshot }) {
                   dataKey="rotulo"
                   tickLine={false}
                   axisLine={false}
-                  width={148}
+                  width={168}
                   tickMargin={6}
                 />
                 <ChartTooltip
@@ -1058,7 +1059,16 @@ function Perdas({ atual }: { atual: Snapshot }) {
                   fill={CORES_SERIE[0]}
                   radius={[0, 4, 4, 0]}
                   barSize={14}
-                />
+                >
+                  <LabelList
+                    dataKey="valor"
+                    position="right"
+                    offset={8}
+                    fill="#737373"
+                    fontSize={11}
+                    formatter={(v) => (typeof v === 'number' ? fmtMoeda(v) : '')}
+                  />
+                </Bar>
               </BarChart>
             </ChartContainer>
           )}

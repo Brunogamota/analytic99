@@ -505,7 +505,7 @@ export function parceirosCriticos(
               vezes_a_media: vezes,
               frase:
                 `${fmtInt(l.ocorrencias)} ${l.ocorrencias === 1 ? 'ocorrência' : 'ocorrências'} em ${fmtInt(l.pedidos)} pedidos — ` +
-                `${fmtDec(taxa, 1)} por 100, ${fmtDec(vezes, 1)}× a média do grupo (${fmtDec(taxa_grupo, 1)}). ` +
+                `${fmtDec(taxa, 2)} por 100, ${fmtDec(vezes, 1)}× a média do grupo (${fmtDec(taxa_grupo, 2)}). ` +
                 `${fmtMoeda(l.valor)} de prejuízo no recorte.${motivo}`,
             }
           })
